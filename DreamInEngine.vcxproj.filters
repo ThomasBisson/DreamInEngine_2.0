@@ -17,6 +17,24 @@
     <ClCompile Include="src\Texture.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_demo.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_draw.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_impl_glfw.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_impl_opengl3.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_widgets.cpp">
+      <Filter>libs\imgui</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ResourceManager.h">
@@ -34,6 +52,30 @@
     <ClInclude Include="include\Texture.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imconfig.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imgui.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imgui_impl_glfw.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imgui_impl_opengl3.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imgui_internal.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\stb_rect_pack.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\stb_textedit.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\stb_truetype.h">
+      <Filter>libs\imgui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
@@ -42,16 +84,31 @@
     <Filter Include="src">
       <UniqueIdentifier>{2c8cc428-fa68-49d9-aa98-17571b987f0a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="shaders">
+    <Filter Include="libs">
+      <UniqueIdentifier>{a36b844d-6079-437c-8fa6-da115420ba3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="libs\imgui">
+      <UniqueIdentifier>{f140439a-1f61-4b54-be87-1d56a6c3f110}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{17bc50cd-670d-4501-ac28-28278a3a534d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\audio">
+      <UniqueIdentifier>{f6207e24-b138-4ef4-97d4-3e57e76d2eba}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\shaders">
       <UniqueIdentifier>{b38d38ed-0549-407f-9d89-eb12070db376}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources\textures">
+      <UniqueIdentifier>{920885c1-e76e-430a-8664-0bd69ed32abe}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\square.vert">
-      <Filter>shaders</Filter>
+      <Filter>resources\shaders</Filter>
     </None>
     <None Include="resources\shaders\square.frag">
-      <Filter>shaders</Filter>
+      <Filter>resources\shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

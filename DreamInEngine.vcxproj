@@ -91,7 +91,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)libs\soil.1.16.0\include;$(SolutionDir)libs\irrKlang-1.6.0-x86\irrKlang-1.6.0\include;$(SolutionDir)libs\glew-2.1.0-x86\include;$(SolutionDir)libs\glm-0.9.9.0;$(SolutionDir)libs\glfw-3.2.1-x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)libs\imgui-1.64\include;$(SolutionDir)libs\soil.1.16.0\include;$(SolutionDir)libs\irrKlang-1.6.0-x86\irrKlang-1.6.0\include;$(SolutionDir)libs\glew-2.1.0-x86\include;$(SolutionDir)libs\glm-0.9.9.0;$(SolutionDir)libs\glfw-3.2.1-x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)libs\soil.1.16.0\lib\x86\Debug;$(SolutionDir)libs\irrKlang-1.6.0-x86\irrKlang-1.6.0\lib\x86_vs;$(SolutionDir)libs\glfw-3.2.1-x86\lib-vc2015;$(SolutionDir)libs\glew-2.1.0-x86\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -114,7 +114,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)libs\soil.1.16.0\include;$(SolutionDir)libs\irrKlang-1.6.0-x86\irrKlang-1.6.0\include;$(SolutionDir)libs\glew-2.1.0-x86\include;$(SolutionDir)libs\glm-0.9.9.0;$(SolutionDir)libs\glfw-3.2.1-x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)libs\imgui-1.64\include;$(SolutionDir)libs\soil.1.16.0\include;$(SolutionDir)libs\irrKlang-1.6.0-x86\irrKlang-1.6.0\include;$(SolutionDir)libs\glew-2.1.0-x86\include;$(SolutionDir)libs\glm-0.9.9.0;$(SolutionDir)libs\glfw-3.2.1-x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -138,6 +138,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui.cpp" />
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_demo.cpp" />
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_draw.cpp" />
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_impl_glfw.cpp" />
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_impl_opengl3.cpp" />
+    <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\ResourceManager.cpp" />
     <ClCompile Include="src\Scene.cpp" />
@@ -151,6 +157,14 @@
     <ClInclude Include="include\Shader.h" />
     <ClInclude Include="include\SpriteRenderer.h" />
     <ClInclude Include="include\Texture.h" />
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imconfig.h" />
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imgui.h" />
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imgui_impl_glfw.h" />
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imgui_impl_opengl3.h" />
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\imgui_internal.h" />
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\stb_rect_pack.h" />
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\stb_textedit.h" />
+    <ClInclude Include="libs\imgui-1.64\include\ImGui\stb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\shaders\square.frag" />
