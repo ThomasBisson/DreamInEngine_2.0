@@ -1,0 +1,45 @@
+﻿  main.cpp
+c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\main.cpp(54): warning C4244: 'initialisation' : conversion de 'double' en 'GLfloat', perte possible de données
+c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\main.cpp(88): warning C4244: 'initialisation' : conversion de 'double' en 'GLfloat', perte possible de données
+  ResourceManager.cpp
+  Scene.cpp
+  Shader.cpp
+  SpriteRenderer.cpp
+  Texture.cpp
+  Génération de code en cours...
+LINK : warning LNK4098: conflit entre la bibliothèque par défaut 'LIBCMT' et les autres bibliothèques ; utilisez /NODEFAULTLIB:library
+LINK : warning LNK4098: conflit entre la bibliothèque par défaut 'MSVCRT' et les autres bibliothèques ; utilisez /NODEFAULTLIB:library
+ResourceManager.obj : warning LNK4049: symbole défini localement ___glewDeleteProgram importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewAttachShader importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewCompileShader importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewCreateProgram importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewCreateShader importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewDeleteShader importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewGetProgramInfoLog importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewGetProgramiv importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewGetShaderInfoLog importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewGetShaderiv importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewGetUniformLocation importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewLinkProgram importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewShaderSource importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewUniform1f importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewUniform1i importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewUniform2f importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewUniform3f importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewUniform4f importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewUniformMatrix4fv importé
+Shader.obj : warning LNK4049: symbole défini localement ___glewUseProgram importé
+SpriteRenderer.obj : warning LNK4049: symbole défini localement ___glewActiveTexture importé
+SpriteRenderer.obj : warning LNK4049: symbole défini localement ___glewBindBuffer importé
+SpriteRenderer.obj : warning LNK4049: symbole défini localement ___glewBufferData importé
+SpriteRenderer.obj : warning LNK4049: symbole défini localement ___glewGenBuffers importé
+SpriteRenderer.obj : warning LNK4049: symbole défini localement ___glewEnableVertexAttribArray importé
+SpriteRenderer.obj : warning LNK4049: symbole défini localement ___glewVertexAttribPointer importé
+SpriteRenderer.obj : warning LNK4049: symbole défini localement ___glewBindVertexArray importé
+SpriteRenderer.obj : warning LNK4049: symbole défini localement ___glewGenVertexArrays importé
+glew32s.lib(glew.obj) : warning LNK4099: PDB 'vc120.pdb' n'a pu être trouvé avec 'glew32s.lib(glew.obj)' ou sur 'C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\vc120.pdb' ; l'objet sera lié sans informations de débogage
+soil.lib(image_DXT.obj) : warning LNK4099: PDB 'SOIL.pdb' n'a pu être trouvé avec 'soil.lib(image_DXT.obj)' ou sur 'C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\SOIL.pdb' ; l'objet sera lié sans informations de débogage
+soil.lib(image_helper.obj) : warning LNK4099: PDB 'SOIL.pdb' n'a pu être trouvé avec 'soil.lib(image_helper.obj)' ou sur 'C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\SOIL.pdb' ; l'objet sera lié sans informations de débogage
+soil.lib(SOIL.obj) : warning LNK4099: PDB 'SOIL.pdb' n'a pu être trouvé avec 'soil.lib(SOIL.obj)' ou sur 'C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\SOIL.pdb' ; l'objet sera lié sans informations de débogage
+soil.lib(stb_image_aug.obj) : warning LNK4099: PDB 'SOIL.pdb' n'a pu être trouvé avec 'soil.lib(stb_image_aug.obj)' ou sur 'C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\SOIL.pdb' ; l'objet sera lié sans informations de débogage
+  DreamInEngine.vcxproj -> C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe

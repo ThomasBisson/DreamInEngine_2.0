@@ -1,0 +1,4 @@
+﻿P:\Visual Studio Enterprise 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(376,5): warning MSB8004: Le répertoire Intermediate ne se termine pas par une barre oblique finale. Cette instance de build ajoutera une barre oblique, comme requis, pour permettre l'évaluation correcte du répertoire Intermediate.
+P:\Visual Studio Enterprise 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Le répertoire Output ne se termine pas par une barre oblique finale. Cette instance de build ajoutera une barre oblique, comme requis, pour permettre l'évaluation correcte du répertoire Output.
+  main.cpp
+  DreamInEngine.vcxproj -> C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine\bin\x64\debug\DreamInEngine.exe

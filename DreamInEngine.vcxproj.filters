@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="src\ResourceManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Shader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SpriteRenderer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\ResourceManager.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Shader.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\SpriteRenderer.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Texture.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{d4cc9d51-1504-41b6-9e23-f971129065aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{2c8cc428-fa68-49d9-aa98-17571b987f0a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{b38d38ed-0549-407f-9d89-eb12070db376}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\shaders\square.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="resources\shaders\square.frag">
+      <Filter>shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
