@@ -22,8 +22,6 @@ public:
 				Sprite* sprite = sprites.get(itSprite->first);
 				BoxPhysics* box = boxs.get(itSprite->first);
 
-				std::cout << "sprite : " << sprite->Position.x << ":" << sprite->Position.y << std::endl;
-				std::cout << "b2 : " << box->getBody()->GetPosition().x << ":" << box->getBody()->GetPosition().y << std::endl;
 				sprite->Position.x = (float) box->getBody()->GetPosition().x;
 				sprite->Position.y = (float) box->getBody()->GetPosition().y;
 			}
