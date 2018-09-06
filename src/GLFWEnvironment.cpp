@@ -38,17 +38,25 @@ void GLFWEnvironment::process_input() {
 int GLFWEnvironment::init() {
 	glfwSetErrorCallback(error_callback);
 
-	glfwInit();
+	if(!glfwInit())
+	{
+		std::cout << "Error: Could not initialize GLFW !" << std::endl;
+		return 1;
+	}
+
+#if __APPLE__
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Required on Mac
+#else
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+#endif	
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-# ifdef __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-# endif
-
-	m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), NULL/*glfwGetPrimaryMonitor()*/, NULL);
+	m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), (m_fullscreen ? glfwGetPrimaryMonitor() : nullptr), nullptr);
 	if (m_window == 0) {
 		// Window or context creation failed
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -71,10 +79,6 @@ void GLFWEnvironment::update_viewport() {
 	m_width = (unsigned)display_w;
 	m_height = (unsigned)display_h;
 	glViewport(0, 0, m_width, m_height);
-}
-
-void GLFWEnvironment::refresh() {
-	glfwSwapBuffers(get_window());
 }
 
 int GLFWEnvironment::quit() {

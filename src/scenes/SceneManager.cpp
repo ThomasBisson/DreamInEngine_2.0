@@ -2,59 +2,33 @@
 // Created by Thomas Bisson and Valentin Dumas on 30/01/2018.
 //
 
-// @TODO: each loop, scene manager updates the active scene
-// @TODO: The active scene is updated: the scene calls scenemanager->update/render to render each sprites !
-// @TODO: the rendering job is left to the scene manager, as it maintains shaderManager's and GUI's references !
-// @TODO: if necessary, store matrices (projection/view/model) in sprites, but it might be a counterproductive idea..
-
 #include <HUD/ImGuiHUD.h>
 
 #include <GLEW/glew.h>
 #include <GLFWEnvironment.h>
+#include <GLFW/glfw3.h>
 
 #include <scenes/SceneManager.h>
 #include <ResourceManager.h>
-#include <GLFW/glfw3.h>
-#include "SpriteRenderer.h"
+#include <SpriteRenderer.h>
 
 #define IDENTITY_MATRICE 1.0f
-#define EMPTY_STRING ""
-
-enum GLBufferType {
-	GL_ARRAY = GL_ARRAY_BUFFER,
-	GL_ELEMENT_ARRAY = GL_ELEMENT_ARRAY_BUFFER
-};
-
-enum GLDrawStyle {
-	STREAM = GL_STREAM_DRAW,
-	STATIC = GL_STATIC_DRAW,
-	DYNAMIC = GL_DYNAMIC_DRAW
-};
 
 SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
 	m_glfw_environment = glfw_environment;
-	//m_ImGui_HUD = nullptr;
+	m_ImGui_HUD = new ImGuiHUD(*this, glfw_environment, true);
+	m_ImGui_HUD->init();
 
-	// @TODO: Store those attributes into the Sprite class ?
-	int m_projection_location = 0;
-	int m_view_location = 0;
-	int m_model_location = 0;
-	int m_transform_location = 0;
-	glm::mat4 m_projection = glm::mat4(IDENTITY_MATRICE);
-	glm::mat4 m_view = glm::mat4(IDENTITY_MATRICE);
-	glm::mat4 m_model = glm::mat4(IDENTITY_MATRICE);
-	glm::mat4 m_transform = glm::mat4(IDENTITY_MATRICE);
+	m_actualScene = nullptr;
 
-	m_actualScene = EMPTY_STRING;
 	m_scenes = std::vector<Scene *>(0);
 	m_index_scene = std::unordered_map<std::string, unsigned int>();
 
-	// TODO: Pass WINDOW Width & Height to manager !
 	// Configure shaders
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(800), static_cast<GLfloat>(600), 0.0f, -1.0f, 1.0f);
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(glfw_environment->get_width()), static_cast<GLfloat>(glfw_environment->get_height()), 0.0f, -1.0f, 1.0f);
 	ResourceManager::GetShader("sprite_shader").Use().SetInteger("image", 0);
 	ResourceManager::GetShader("sprite_shader").SetMatrix4("projection", projection);
-	
+
 	// Load Renderers
 	spriteRenderer = new SpriteRenderer(ResourceManager::GetShader("sprite_shader"));
 }
@@ -70,6 +44,7 @@ bool SceneManager::init() {
 void SceneManager::start() {
 	if (!init()) {
 		std::cout << "Error: Could not initialize SceneManager [init error]" << std::endl;
+		return;
 	}
 	run();
 }
@@ -79,37 +54,51 @@ void SceneManager::run() {
 		glfwPollEvents();
 
 		m_glfw_environment->process_input(); // Order ??
-		m_glfw_environment->update_viewport();
-		m_glfw_environment->clear_screen(0.2, 0.2, 0.2, 1.0);
 
-		//m_ImGui_HUD->update();
+		glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-		/* Search for active scenes */
-		for (auto &active_scene : m_scenes) {
-			/* Update active scene */
-			active_scene->update();
+		//m_glfw_environment->update_viewport();
 
-			/* Render active scene */
-			active_scene->render();
+		m_ImGui_HUD->update();
+
+		if (m_actualScene) // Selected scene
+		{
+			m_actualScene->update();
+			m_actualScene->render();
+		}
+		else // No scene selected
+		{
 		}
 
-		//m_ImGui_HUD->render();
+		m_ImGui_HUD->render();
 
-		m_glfw_environment->refresh();
+		glfwSwapBuffers(m_glfw_environment->get_window());
 	}
 
 	// Cleanup
-	//m_ImGui_HUD->close();
+	m_ImGui_HUD->close();
 	m_glfw_environment->close();
 }
 
 void SceneManager::createScene(const std::string &nameScene) {
 	m_scenes.emplace_back(new Scene(this, nameScene));
 	m_index_scene[nameScene] = m_scenes.size() - 1;
-	//m_index_scene[nameScene] = m_scenes.getActualSize()-1;
 }
 
-void SceneManager::selectScene(const std::string &nameScene) { m_actualScene = nameScene; }
+void SceneManager::selectScene(const std::string &nameScene)
+{
+	for (auto& m_scene : m_scenes)
+	{
+		if (m_scene->getName() == nameScene)
+		{
+			m_actualScene = m_scene;
+			break;
+		}
+
+		// NOTE: no scene found
+	}
+}
 
 void SceneManager::changeSceneName(std::string oldName, std::string newName) {
 	//Change the name of the scene in the vector
@@ -117,17 +106,16 @@ void SceneManager::changeSceneName(std::string oldName, std::string newName) {
 
 	//Change the key in the map
 	std::unordered_map<std::string, unsigned int>::iterator i = m_index_scene.find(oldName);
-	unsigned int tmp = i->second;
+	const unsigned int tmp = i->second;
 	m_index_scene.erase(i);
 	m_index_scene[newName] = tmp;
 }
 
+// Remove the scene from the vector
 void SceneManager::eraseScene(std::string nameScene) {
-	//Remove the scene from the vector
 	int i = m_index_scene[nameScene];
 	m_scenes.at(i) = m_scenes[m_scenes.size() - 1];
 	m_scenes.pop_back();
-
 
 	//Remove the scene from the map
 	std::unordered_map<std::string, unsigned int>::iterator it2;
@@ -148,10 +136,10 @@ Scene *SceneManager::getScene(std::string nameScene) {
 	return m_scenes[m_index_scene[nameScene]];
 }
 
-std::vector<Scene *> SceneManager::getScenes() { return m_scenes; }
+std::vector<Scene *> SceneManager::getScenes() const { return m_scenes; }
 
-std::string SceneManager::getActualScene() const {
-	return m_actualScene;
+Scene& SceneManager::getActualScene() const {
+	return *m_actualScene;
 }
 
 std::unordered_map<std::string, unsigned int> SceneManager::getIndexScene() const { return m_index_scene; }
@@ -167,7 +155,7 @@ void SceneManager::new_sprite(std::string sceneName, Entity entity, Texture text
 }
 
 void SceneManager::update_sprite(Sprite *sprite) {
-	//std::cout << "b2 " << 
+
 }
 
 void SceneManager::render_sprite(Sprite *sprite) {
@@ -175,24 +163,29 @@ void SceneManager::render_sprite(Sprite *sprite) {
 	spriteRenderer->DrawSprite(sprite->Texture, sprite->Position, sprite->Size, sprite->Rotation, sprite->Color, GL_FALSE);
 }
 
+// TODO: move to another location
 void SceneManager::addBox2D(std::string sceneName, Entity entity, Sprite *sprite, bool dynamicBody) {
 	m_scenes[m_index_scene[sceneName]]->add_box_physics(entity, sprite->Position.x, sprite->Position.y,
 		sprite->Size.x, sprite->Size.y, dynamicBody);
 }
 
+//@TODO: see if memory leak is fixed => Do Tests
 SceneManager::~SceneManager() {
-	//@TODO: fix memory leak
-	//m_index_scene.clear();
-	//m_scenes.kill();
-	//delete m_ImGui_HUD;
+	delete m_ImGui_HUD;
 	delete m_glfw_environment;
 	delete spriteRenderer;
-	//m_ImGui_HUD = nullptr;
+
+	m_ImGui_HUD = nullptr;
 	m_glfw_environment = nullptr;
 	spriteRenderer = nullptr;
-	for (auto it = m_scenes.begin(); it != m_scenes.end(); ++it) {
-		delete (*it);
-		*it = nullptr;
+
+	for (auto& m_scene : m_scenes)
+	{
+		delete m_scene;
+		m_scene = nullptr;
 	}
+
 	m_scenes.clear();
+
+	m_index_scene.clear();
 }

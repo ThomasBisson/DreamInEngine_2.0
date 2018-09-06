@@ -300,29 +300,18 @@
 
 #include <scenes/SceneManager.h>
 
+#include <HUD/ImGuiHUD.h>
+
+#define SCREEN_WIDTH 1920
+#define SCREEN_HEIGHT 1080
+
 int main() {
-	// @TODO: in Init() method when we will be able
-	//    Window w = new Window(glfwenvironment);
-	//    shadermanager sm;
-	//    texturemanager tm;
-	//    imgui imgui;
-	//    Graphics g = new Graphics(w,sm,tm,imgui);
-	//    Textu t = new Textu("hh.png");
-	//    w.setTexture(t, 4, 5);
-	//    t.setPosition(getWigth()+55, getHeight);
-	// @TODO: see width & height params;
-	GLFWEnvironment* m_glfw_environment = new GLFWEnvironment("DreamIn Engine", 800, 600);
+	GLFWEnvironment* m_glfw_environment = new GLFWEnvironment("DreamIn Engine", SCREEN_WIDTH, SCREEN_HEIGHT, GL_FALSE);
 	m_glfw_environment->init();
 
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
 		throw std::runtime_error("glewInit failed");
-
-	/*m_ImGui_HUD = new ImGuiHUD(*this, m_glfw_environment, true);
-	m_ImGui_HUD->init();*/
-
-	// @TODO: in imgui
-	// push up play button => { imgui.disable_interface(); }
 
 	// Load Shaders (program, vertex, fragment)
 	ResourceManager::LoadShader("resources/shaders/sprite.vert", "resources/shaders/sprite.frag", nullptr, "sprite_shader");
@@ -336,6 +325,7 @@ int main() {
 
 	/* Create one Scene in the Scene Manager */
 	sm->createScene("Aloha");
+	sm->selectScene("Aloha");
 
 	/* Get the Scene Manager's first scene */
 	//auto scene1 = sm->getScenes()[0];

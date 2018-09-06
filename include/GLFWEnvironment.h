@@ -33,21 +33,16 @@ class GLFWEnvironment {
 public:
 	GLFWEnvironment();
 
-	GLFWEnvironment(const std::string &title, unsigned width, unsigned height, bool fullscreen = true);
+	GLFWEnvironment(const std::string &title, unsigned width, unsigned height, bool fullscreen = false);
 
 	// TODO: move this apart cause it might not be its responsibilty (to manage inputs)
 	void process_input();
 
-	// TODO: Give the choice to set GLFW Context Min/Maj versions
 	int init();
 
 	void update_viewport();
 
 	void clear_screen(float r, float g, float b, float a);
-
-	void handle();
-
-	void refresh();
 
 	int quit();
 

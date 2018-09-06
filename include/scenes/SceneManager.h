@@ -38,10 +38,10 @@ class SceneManager {
 private:
 	/* Environments, Texture & Shader Loaders */
 	GLFWEnvironment *m_glfw_environment;
-	//ImGuiHUD *m_ImGui_HUD;
+	ImGuiHUD *m_ImGui_HUD;
 
 	/* Locations & Matrices */
-	std::string m_actualScene;
+	Scene *m_actualScene;
 	std::vector<Scene *> m_scenes;
 	std::unordered_map<std::string, unsigned int> m_index_scene;
 
@@ -95,11 +95,11 @@ public:
 
 	/* Get Scenes
 	 * Get all the scenes from this manager */
-	std::vector<Scene *> getScenes();
+	std::vector<Scene *> getScenes() const;
 
 	/* Get Actual Scene
 	 * Get selected / active scene for this manager */
-	std::string getActualScene() const;
+	Scene& getActualScene() const;
 
 	/* Get Index Scene
 	 * Get a Scene's index from a name */
