@@ -19,18 +19,13 @@ public:
 		for (std::unordered_map<unsigned int, unsigned int>::iterator it = boxs.getMap().begin(); it != boxs.getMap().end(); ++it) {
 			auto itSprite = sprites.getMap().find(it->first);
 			if (itSprite != sprites.getMap().end()) {
-				//std::cout << it->first << ":" << it->second << std::endl;
-				//std::cout << itSprite->first << ":" << itSprite->second << std::endl;
-				//std::cout << sprites.getMap().end()->first << ":" << sprites.getMap().end()->second << std::endl;
-
 				Sprite* sprite = sprites.get(itSprite->first);
 				BoxPhysics* box = boxs.get(itSprite->first);
 
-				//std::cout << sprite->get_position().x << ":" << sprite->get_position().y << std::endl;
-				std::cout << box->getBody()->GetWorldCenter().x << ":" << box->getBody()->GetWorldCenter().y << std::endl;
-				sprite->Position.x = box->getBody()->GetWorldCenter().x - (sprite->Size.x / 720) / 2;
-				sprite->Position.y = box->getBody()->GetWorldCenter().y - (sprite->Size.y / 1024) / 2;
-				//std::cout << sprite->get_position().x << ":" << sprite->get_position().y << std::endl;
+				std::cout << "sprite : " << sprite->Position.x << ":" << sprite->Position.y << std::endl;
+				std::cout << "b2 : " << box->getBody()->GetPosition().x << ":" << box->getBody()->GetPosition().y << std::endl;
+				sprite->Position.x = (float) box->getBody()->GetPosition().x;
+				sprite->Position.y = (float) box->getBody()->GetPosition().y;
 			}
 		}
 		int a = 0;

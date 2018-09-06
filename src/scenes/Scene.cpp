@@ -9,7 +9,8 @@ Scene::Scene(SceneManager *sceneManager, const std::string &sceneName) : m_scene
 m_name(sceneName),
 m_box_physics_system(),
 m_sprites(), m_box_physique(), m_entities() {
-	m_world = new b2World(b2Vec2(0.0, -0.1));
+	m_world = new b2World(b2Vec2(0.0, 9.81));
+	
 }
 
 void Scene::update() {

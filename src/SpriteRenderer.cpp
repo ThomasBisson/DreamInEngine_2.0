@@ -46,13 +46,23 @@ void SpriteRenderer::initRenderData()
 	GLuint VBO;
 	GLfloat vertices[] = {
 		// Pos      // Tex
-		0.0f, 1.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 1.0f, 0.0f,
-		0.0f, 0.0f, 0.0f, 0.0f,
+		//0.0f, 1.0f, 0.0f, 1.0f, // top right
+		//1.0f, 0.0f, 1.0f, 0.0f, //
+		//0.0f, 0.0f, 0.0f, 0.0f,
 
-		0.0f, 1.0f, 0.0f, 1.0f,
-		1.0f, 1.0f, 1.0f, 1.0f,
-		1.0f, 0.0f, 1.0f, 0.0f
+		//0.0f, 1.0f, 0.0f, 1.0f,
+		//1.0f, 1.0f, 1.0f, 1.0f,
+		//1.0f, 0.0f, 1.0f, 0.0f
+
+		// first triangle
+		1.0f, 1.0f, 1.0f, 1.0f, // top right
+		-1.0f, -1.0f, 0.0f, 0.0f, // bottom left
+		-1.0f, 1.0f, 0.0f, 1.0f, // top left
+		
+		// second triangle
+		1.0f, 1.0f, 1.0f, 1.0f, // top right
+		1.0f, -1.0f, 1.0f, 0.0f, // bottom right
+		-1.0f, -1.0f, 0.0f, 0.0f
 	};
 
 	glGenVertexArrays(1, &this->quadVAO);

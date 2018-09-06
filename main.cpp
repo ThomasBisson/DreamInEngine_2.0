@@ -346,10 +346,13 @@ int main() {
 	std::cout << sm->getScene("Aloha")->getEntities()[0].name << std::endl;
 
 	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[0], ResourceManager::GetTexture("container"), glm::vec2(50.0f, 50.0f));
-	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[1], ResourceManager::GetTexture("face"), glm::vec2(100.0f, 100.0f));
-	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[2], ResourceManager::GetTexture("pokeball"), glm::vec2(200.0f, 200.0f));
+	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[1], ResourceManager::GetTexture("face"), glm::vec2(50.0f, 300.0f));
+	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[2], ResourceManager::GetTexture("pokeball"), glm::vec2(50.0f, 500.0f));
 
-	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[0],sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id), true);
+	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id), true);
+	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[1], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[1].id), true);
+	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[2],sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[2].id), false);
+
 
 	sm->start();
 

@@ -51,7 +51,7 @@ SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
 
 	// TODO: Pass WINDOW Width & Height to manager !
 	// Configure shaders
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(1920), static_cast<GLfloat>(1080), 0.0f, -1.0f, 1.0f);
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(800), static_cast<GLfloat>(600), 0.0f, -1.0f, 1.0f);
 	ResourceManager::GetShader("sprite_shader").Use().SetInteger("image", 0);
 	ResourceManager::GetShader("sprite_shader").SetMatrix4("projection", projection);
 	
@@ -167,7 +167,7 @@ void SceneManager::new_sprite(std::string sceneName, Entity entity, Texture text
 }
 
 void SceneManager::update_sprite(Sprite *sprite) {
-
+	//std::cout << "b2 " << 
 }
 
 void SceneManager::render_sprite(Sprite *sprite) {

@@ -9,7 +9,7 @@ b2Body* BoxPhysics::addRec(b2World *world, int x, int y, int w, int h, bool dyn)
 {
 	b2BodyDef bodydef;
 	bodydef.position.Set(x, y);
-	//bodydef.gravityScale = 5.0;
+	bodydef.gravityScale = 1.0;
 	if (dyn)
 		bodydef.type = b2_dynamicBody;
 	body = world->CreateBody(&bodydef);
@@ -19,8 +19,9 @@ b2Body* BoxPhysics::addRec(b2World *world, int x, int y, int w, int h, bool dyn)
 
 	b2FixtureDef fixturedef;
 	fixturedef.shape = &bshape;
-	fixturedef.density = 1.0;
-	fixturedef.restitution = 3.0;
+	fixturedef.density = 0.0;
+	fixturedef.restitution = 0.0;
+	
 	body->CreateFixture(&fixturedef);
 
 	// TODO: nullptr to remove ! should return a value (did this to Compile)

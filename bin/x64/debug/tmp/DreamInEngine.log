@@ -1,4 +1,22 @@
-﻿P:\Visual Studio Enterprise 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(376,5): warning MSB8004: Le répertoire Intermediate ne se termine pas par une barre oblique finale. Cette instance de build ajoutera une barre oblique, comme requis, pour permettre l'évaluation correcte du répertoire Intermediate.
-P:\Visual Studio Enterprise 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Le répertoire Output ne se termine pas par une barre oblique finale. Cette instance de build ajoutera une barre oblique, comme requis, pour permettre l'évaluation correcte du répertoire Output.
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(376,5): warning MSB8004: Le répertoire Intermediate ne se termine pas par une barre oblique finale. Cette instance de build ajoutera une barre oblique, comme requis, pour permettre l'évaluation correcte du répertoire Intermediate.
+C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(377,5): warning MSB8004: Le répertoire Output ne se termine pas par une barre oblique finale. Cette instance de build ajoutera une barre oblique, comme requis, pour permettre l'évaluation correcte du répertoire Output.
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_glfw.cpp
+c:\users\asus pc\documents\github\dreaminengine_2.0\libs\imgui-1.64\include\imgui\imgui_impl_glfw.cpp(35): fatal error C1083: Impossible d'ouvrir le fichier include : 'GLFW/glfw3.h' : No such file or directory
+  imgui_impl_opengl3.cpp
+c:\users\asus pc\documents\github\dreaminengine_2.0\libs\imgui-1.64\include\imgui\imgui_impl_opengl3.cpp(87): fatal error C1083: Impossible d'ouvrir le fichier include : 'GLEW/glew.h' : No such file or directory
+  imgui_widgets.cpp
   main.cpp
-  DreamInEngine.vcxproj -> C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine\bin\x64\debug\DreamInEngine.exe
+c:\users\asus pc\documents\github\dreaminengine_2.0\main.cpp(2): fatal error C1083: Impossible d'ouvrir le fichier include : 'GLEW/glew.h' : No such file or directory
+  ResourceManager.cpp
+c:\users\asus pc\documents\github\dreaminengine_2.0\include\resourcemanager.h(15): fatal error C1083: Impossible d'ouvrir le fichier include : 'GLEW/glew.h' : No such file or directory
+  Scene.cpp
+  Shader.cpp
+c:\users\asus pc\documents\github\dreaminengine_2.0\include\shader.h(14): fatal error C1083: Impossible d'ouvrir le fichier include : 'GLEW/glew.h' : No such file or directory
+  SpriteRenderer.cpp
+c:\users\asus pc\documents\github\dreaminengine_2.0\include\texture.h(12): fatal error C1083: Impossible d'ouvrir le fichier include : 'GLEW/glew.h' : No such file or directory
+  Texture.cpp
+c:\users\asus pc\documents\github\dreaminengine_2.0\include\texture.h(12): fatal error C1083: Impossible d'ouvrir le fichier include : 'GLEW/glew.h' : No such file or directory
+  Génération de code en cours...

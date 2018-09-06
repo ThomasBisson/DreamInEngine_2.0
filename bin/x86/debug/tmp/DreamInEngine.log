@@ -1,2 +1,4 @@
-﻿  main.cpp
-  DreamInEngine.vcxproj -> C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe
+﻿  BoxPhysics.cpp
+c:\users\asus pc\documents\github\dreaminengine_2.0\src\components\boxphysics.cpp(11): warning C4244: 'argument' : conversion de 'int' en 'float32', perte possible de données
+c:\users\asus pc\documents\github\dreaminengine_2.0\src\components\boxphysics.cpp(18): warning C4244: 'argument' : conversion de 'int' en 'float32', perte possible de données
+  DreamInEngine.vcxproj -> C:\Users\asus pc\Documents\GitHub\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe
