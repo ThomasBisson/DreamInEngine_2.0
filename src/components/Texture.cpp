@@ -1,23 +1,14 @@
-/*******************************************************************
-** This code is part of Breakout.
-**
-** Breakout is free software: you can redistribute it and/or modify
-** it under the terms of the CC BY 4.0 license as published by
-** Creative Commons, either version 4 of the License, or (at your
-** option) any later version.
-******************************************************************/
 #include <iostream>
 
-#include "../include/texture.h"
+#include "components/Texture.h"
 
-
-Texture2D::Texture2D()
+Texture::Texture()
 	: Width(0), Height(0), Internal_Format(GL_RGB), Image_Format(GL_RGB), Wrap_S(GL_REPEAT), Wrap_T(GL_REPEAT), Filter_Min(GL_LINEAR), Filter_Max(GL_LINEAR)
 {
 	glGenTextures(1, &this->ID);
 }
 
-void Texture2D::Generate(GLuint width, GLuint height, unsigned char* data)
+void Texture::Generate(GLuint width, GLuint height, unsigned char* data)
 {
 	this->Width = width;
 	this->Height = height;
@@ -33,7 +24,7 @@ void Texture2D::Generate(GLuint width, GLuint height, unsigned char* data)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture2D::Bind() const
+void Texture::Bind() const
 {
 	glBindTexture(GL_TEXTURE_2D, this->ID);
 }

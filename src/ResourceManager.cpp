@@ -15,7 +15,7 @@
 #include <SOIL.h>
 
 // Instantiate static variables
-std::map<std::string, Texture2D>    ResourceManager::Textures;
+std::map<std::string, Texture>    ResourceManager::Textures;
 std::map<std::string, Shader>       ResourceManager::Shaders;
 
 
@@ -30,13 +30,13 @@ Shader ResourceManager::GetShader(std::string name)
 	return Shaders[name];
 }
 
-Texture2D ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
+Texture ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, std::string name)
 {
 	Textures[name] = loadTextureFromFile(file, alpha);
 	return Textures[name];
 }
 
-Texture2D ResourceManager::GetTexture(std::string name)
+Texture ResourceManager::GetTexture(std::string name)
 {
 	return Textures[name];
 }
@@ -95,10 +95,10 @@ Shader ResourceManager::loadShaderFromFile(const GLchar *vShaderFile, const GLch
 	return shader;
 }
 
-Texture2D ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha)
+Texture ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha)
 {
 	// Create Texture object
-	Texture2D texture;
+	Texture texture;
 	if (alpha)
 	{
 		texture.Internal_Format = GL_RGBA;

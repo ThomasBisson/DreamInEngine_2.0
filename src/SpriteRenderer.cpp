@@ -1,5 +1,5 @@
-#include "../include/Texture.h"
-#include "../include/SpriteRenderer.h"
+#include <components/Texture.h>
+#include <SpriteRenderer.h>
 
 SpriteRenderer::SpriteRenderer(Shader shader)
 {
@@ -11,7 +11,7 @@ SpriteRenderer::~SpriteRenderer()
 {
 }
 
-void SpriteRenderer::DrawSprite(Texture2D &texture, glm::vec2 position,
+void SpriteRenderer::DrawSprite(Texture &texture, glm::vec2 position,
 	glm::vec2 size, GLfloat rotate, glm::vec3 color, GLboolean mirror)
 {
 	// Prepare transformations
@@ -67,6 +67,3 @@ void SpriteRenderer::initRenderData()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
-
-
-

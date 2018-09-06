@@ -1,4 +1,2 @@
 ﻿  main.cpp
-c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\main.cpp(92): warning C4244: 'initialisation' : conversion de 'double' en 'GLfloat', perte possible de données
-c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\main.cpp(209): warning C4244: 'initialisation' : conversion de 'double' en 'GLfloat', perte possible de données
   DreamInEngine.vcxproj -> C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe
