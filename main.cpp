@@ -294,7 +294,8 @@
 //	}
 //}
 
-#include "ResourceManager.h"
+#include <ResourceManager.h>
+
 #include <GLFWEnvironment.h>
 
 #include <scenes/SceneManager.h>
@@ -338,10 +339,10 @@ int main() {
 
 	/* Get the Scene Manager's first scene */
 	//auto scene1 = sm->getScenes()[0];
-	std::cout << sm->getScene("Aloha")->getName() << std::endl;
-	sm->getScene("Aloha")->getEntities().emplace_back(Entity("Container", 0));
-	sm->getScene("Aloha")->getEntities().emplace_back(Entity("AwesomeFace_32px", 1));
-	sm->getScene("Aloha")->getEntities().emplace_back(Entity("PokeBall_200px", 2));
+	//std::cout << sm->getScene("Aloha")->getName() << std::endl;
+	sm->getScene("Aloha")->getEntities().emplace_back(Entity("container_entity", 0));
+	sm->getScene("Aloha")->getEntities().emplace_back(Entity("face_entity", 1));
+	sm->getScene("Aloha")->getEntities().emplace_back(Entity("pokeball_entity", 2));
 	std::cout << sm->getScene("Aloha")->getEntities()[0].name << std::endl;
 
 	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[0], ResourceManager::GetTexture("container"), glm::vec2(50.0f, 50.0f));
