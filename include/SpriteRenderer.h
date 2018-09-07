@@ -20,9 +20,11 @@ public:
 		glm::vec3 color = glm::vec3(1.0f),
 		GLboolean mirror = GL_FALSE);
 
+	void ChangeVerticeData(GLfloat *vertices);
+
 private:
 	Shader shader;
-	GLuint quadVAO;
+	GLuint quadVAO, quadVBO;
 
 	void initRenderData();
 };

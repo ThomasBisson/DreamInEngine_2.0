@@ -26,6 +26,8 @@ SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
 
 	// Configure shaders
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(glfw_environment->get_width()), static_cast<GLfloat>(glfw_environment->get_height()), 0.0f, -1.0f, 1.0f);
+	//glm::mat4 projection = glm::ortho(static_cast<GLfloat>(-1920 / 2), static_cast<GLfloat>(1920 / 2), static_cast<GLfloat>(-1080 / 2), static_cast<GLfloat>(1080 / 2), -1.0f, 1.0f);
+	//projection = glm::translate(projection, glm::vec3(0.0f, 0.0f, 3.0f));
 	ResourceManager::GetShader("sprite_shader").Use().SetInteger("image", 0);
 	ResourceManager::GetShader("sprite_shader").SetMatrix4("projection", projection);
 
@@ -55,8 +57,15 @@ void SceneManager::run() {
 
 		m_glfw_environment->process_input(); // Order ??
 
-		glClearColor(1.0f, 1.0f, 0.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
+
+		glEnable(GL_SCISSOR_TEST);
+			glScissor(1920/4, 1080/4, 1920/2, 1080/2); // Take into consideration a little part of the rendering screen
+			glViewport(1920 / 4, 1080 / 4, 1920 / 2, 1080 / 2);
+			glClearColor(0.6f, 0.6f, 0.6f, 1.0f);
+			glClear(GL_COLOR_BUFFER_BIT);
+		glDisable(GL_SCISSOR_TEST);
 
 		//m_glfw_environment->update_viewport();
 
@@ -65,6 +74,8 @@ void SceneManager::run() {
 		if (m_actualScene) // Selected scene
 		{
 			m_actualScene->update();
+
+			// Render scene from a first perspective
 			m_actualScene->render();
 		}
 		else // No scene selected
@@ -74,6 +85,8 @@ void SceneManager::run() {
 		m_ImGui_HUD->render();
 
 		glfwSwapBuffers(m_glfw_environment->get_window());
+
+		m_glfw_environment->update_viewport(); // restore viewport to default
 	}
 
 	// Cleanup

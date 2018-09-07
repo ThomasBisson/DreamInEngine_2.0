@@ -8,15 +8,15 @@
 #include <glfw/glfw3.h>
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-	glViewport(0, 0, width, height);
+	// glViewport(0, 0, width, height);
 }
 
-GLFWEnvironment::GLFWEnvironment() {
+GLFWEnvironment::GLFWEnvironment(bool fullscreen, const std::string &title) {
 	m_window = nullptr;
 	m_title = "Sugar World";
-	m_width = 512;
-	m_height = 512;
-	m_fullscreen = true;
+	m_width = 0; // defined later
+	m_height = 0; // idem (in init())
+	m_fullscreen = fullscreen;
 }
 
 GLFWEnvironment::GLFWEnvironment(const std::string &title, unsigned width, unsigned height, bool fullscreen) {
@@ -44,6 +44,14 @@ int GLFWEnvironment::init() {
 		return 1;
 	}
 
+	if(!m_width && !m_height) // Size undefined earlier
+	{
+		// Determine window size, based on screen resolution
+		const GLFWvidmode* resolution = this->get_resolution();
+		m_width = resolution->width;
+		m_height = resolution->height;
+	}
+
 #if __APPLE__
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
@@ -54,7 +62,7 @@ int GLFWEnvironment::init() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif	
-	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), (m_fullscreen ? glfwGetPrimaryMonitor() : nullptr), nullptr);
 	if (m_window == 0) {
@@ -117,4 +125,9 @@ bool GLFWEnvironment::is_fullscreen() {
 
 void GLFWEnvironment::set_fullscreen(bool fullscreen) {
 	m_fullscreen = fullscreen;
+}
+
+const GLFWvidmode* GLFWEnvironment::get_resolution() const
+{
+	return glfwGetVideoMode(glfwGetPrimaryMonitor());
 }
