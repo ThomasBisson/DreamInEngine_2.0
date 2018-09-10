@@ -28,18 +28,18 @@ class SpriteRenderer;
 
 class GLFWEnvironment;
 
-typedef enum ProjectionType
+typedef enum
 {
-	PROJECTION_CENTER_CENTER = 0,
-	PROJECTION_NORMALIZED_TOP_LEFT = 1,
-	PROJECTION_NORMALIZED_CENTER_CENTER = 2,
-};
+	PROJECTION_NORMALIZED_TOP_LEFT = 0,  // Normalized, Default 2D projection
+	PROJECTION_NORMALIZED_CENTER_CENTER = 1, // Normalized, but textures have reverse coordinates
+	PROJECTION_CENTER_CENTER = 2, // No projection
+} ProjectionType;
 
 class SceneManager {
 
 private:
 	/* Environments, Texture & Shader Loaders */
-	GLFWEnvironment *m_glfw_environment;
+	GLFWEnvironment * m_glfw_environment;
 	ImGuiHUD *m_ImGui_HUD;
 
 	/* Locations & Matrices */

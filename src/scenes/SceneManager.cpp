@@ -12,9 +12,12 @@
 #include <ResourceManager.h>
 #include <SpriteRenderer.h>
 
+#include <utils/fps.h>
+
 #define IDENTITY_MATRICE 1.0f
 
 SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
+
 	m_glfw_environment = glfw_environment;
 	m_ImGui_HUD = new ImGuiHUD(*this, glfw_environment, true);
 	m_ImGui_HUD->init();
@@ -27,11 +30,15 @@ SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
 	// TODO: Init projection mat4 ARRAY on the gpu side ! and call rendering to the good projection thanks to the enum id
 	// TODO: also see how to do a GLSL array (especially for mat4 arrays)
 	// Configure shaders
-	// glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(glfw_environment->get_width()), static_cast<GLfloat>(glfw_environment->get_height()), 0.0f, -1.0f, 1.0f);
-	glm::mat4 projection = glm::ortho(static_cast<GLfloat>(-1920 / 2), static_cast<GLfloat>(1920 / 2), static_cast<GLfloat>(-1080 / 2), static_cast<GLfloat>(1080 / 2), -1.0f, 1.0f);
-	ResourceManager::GetShader("sprite_shader").SetInteger("projectionType", PROJECTION_NORMALIZED_CENTER_CENTER); // TODO: Change this !! add an enum type
+	// 
+	glm::mat4 projections[] = {
+		glm::ortho(0.0f, static_cast<GLfloat>(glfw_environment->get_width()), static_cast<GLfloat>(glfw_environment->get_height()), 0.0f, -1.0f, 1.0f), // Normalized TOP LEFT
+		glm::ortho(static_cast<GLfloat>(-1920 / 2), static_cast<GLfloat>(1920 / 2), static_cast<GLfloat>(-1080 / 2), static_cast<GLfloat>(1080 / 2), -1.0f, 1.0f) // Normalized CENTER CENTER
+	};
+
 	ResourceManager::GetShader("sprite_shader").Use().SetInteger("image", 0);
-	ResourceManager::GetShader("sprite_shader").SetMatrix4("projection", projection);
+	ResourceManager::GetShader("sprite_shader").SetInteger("projectionType", PROJECTION_NORMALIZED_TOP_LEFT); // TODO: Change this !! add an enum type
+	ResourceManager::GetShader("sprite_shader").SetMatrix4("projection", projections[PROJECTION_NORMALIZED_TOP_LEFT]);
 
 	// Load Renderers
 	spriteRenderer = new SpriteRenderer(ResourceManager::GetShader("sprite_shader"));
@@ -55,6 +62,9 @@ void SceneManager::start() {
 
 void SceneManager::run() {
 	while (!m_glfw_environment->quit()) {
+		
+		utils::get_fps();
+
 		glfwPollEvents();
 
 		m_glfw_environment->process_input(); // Order ??
@@ -64,10 +74,10 @@ void SceneManager::run() {
 
 		/* (Re)Define the zone where OpenGL can Draw/Render things */
 		glEnable(GL_SCISSOR_TEST);
-			glScissor(1920/4, 1080/4, 1920/2, 1080/2); // Redefine the OpenGL's drawable zone
-			glViewport(1920 / 4, 1080 / 4, 1920 / 2, 1080 / 2);
-			glClearColor(0.6f, 0.6f, 0.6f, 1.0f); // Clear only the defined zone
-			glClear(GL_COLOR_BUFFER_BIT);
+		glScissor(1920 / 4, 1080 / 4, 1920 / 2, 1080 / 2); // Redefine the OpenGL's drawable zone
+		glViewport(1920 / 4, 1080 / 4, 1920 / 2, 1080 / 2);
+		glClearColor(0.6f, 0.6f, 0.6f, 1.0f); // Clear only the defined zone
+		glClear(GL_COLOR_BUFFER_BIT);
 		glDisable(GL_SCISSOR_TEST);
 
 		//m_glfw_environment->update_viewport();

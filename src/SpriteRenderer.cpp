@@ -43,8 +43,6 @@ void SpriteRenderer::DrawSprite(Texture &texture, glm::vec2 position,
 
 void SpriteRenderer::ChangeVerticeData(GLfloat *vertices)
 {
-
-
 	glBindBuffer(GL_ARRAY_BUFFER, this->quadVBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -59,14 +57,7 @@ void SpriteRenderer::initRenderData()
 {
 	GLuint VBO;
 	GLfloat vertices[] = {
-		// Pos      // Tex
-		//0.0f, 1.0f, 0.0f, 1.0f, // top right
-		//1.0f, 0.0f, 1.0f, 0.0f, //
-		//0.0f, 0.0f, 0.0f, 0.0f,
-
-		//0.0f, 1.0f, 0.0f, 1.0f,
-		//1.0f, 1.0f, 1.0f, 1.0f,
-		//1.0f, 0.0f, 1.0f, 0.0f
+		// Position // Texture
 
 		// first triangle
 		1.0f, 1.0f, 1.0f, 1.0f, // top right

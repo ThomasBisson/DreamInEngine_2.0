@@ -20,6 +20,7 @@ public:
 		glm::vec3 color = glm::vec3(1.0f),
 		GLboolean mirror = GL_FALSE);
 
+	// TODO: do something with this method or delete it
 	void ChangeVerticeData(GLfloat *vertices);
 
 private:

@@ -36,6 +36,16 @@ Texture ResourceManager::LoadTexture(const GLchar *file, GLboolean alpha, std::s
 	return Textures[name];
 }
 
+//Texture ResourceManager::LoadTexturesFromSpritesheet(const GLchar* file, GLboolean alpha, std::string name, unsigned int numRows, unsigned int numCols)
+//{
+//	Texture spritesheet = loadTextureFromFile(file, alpha);
+//
+//	int ss_width = spritesheet.Width / numCols;
+//	int ss_height = spritesheet.Height / numRows;
+//
+//
+//}
+
 Texture ResourceManager::GetTexture(std::string name)
 {
 	return Textures[name];
