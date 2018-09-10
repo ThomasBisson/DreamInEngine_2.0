@@ -107,7 +107,7 @@ void ImGuiHUD::update() {
 	my_window_scene_flags += ImGuiWindowFlags_MenuBar;
 	my_window_scene_flags += ImGuiWindowFlags_NoMove;
 	ImGui::Begin("Window scene", &m_show_window_scene, my_window_scene_flags);
-	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.15f, m_glfw_environment->get_height()*1.0f));
+	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height()*1.0f));
 	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f + m_glfw_environment->get_height() * 0.035f));
 	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
@@ -135,7 +135,7 @@ void ImGuiHUD::update() {
 	//my_menubar_flags = ImGuiWindowFlags_AlwaysAutoResize;
 	//my_window_scene_flags += ImGuiWindowFlags_MenuBar;
 	ImGui::Begin("Window entity", &m_show_window_entity, my_window_entity_flags);
-	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.15f, m_glfw_environment->get_height()*1.0f));
+	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height()*1.0f));
 	ImGui::SetWindowPos(ImVec2(m_glfw_environment->get_width() - ImGui::GetWindowWidth(), m_glfw_environment->get_height() * 0.035f));
 	if (entitySelected != -1 && sceneSelected != -1) {
 		Entity e = m_scene_manager.getScenes()[sceneSelected]->getEntities()[entitySelected];

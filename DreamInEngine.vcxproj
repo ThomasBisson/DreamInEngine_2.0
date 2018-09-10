@@ -140,7 +140,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="fps.cpp" />
     <ClCompile Include="libs\Box2D\Box2D\Collision\b2BroadPhase.cpp" />
     <ClCompile Include="libs\Box2D\Box2D\Collision\b2CollideCircle.cpp" />
     <ClCompile Include="libs\Box2D\Box2D\Collision\b2CollideEdge.cpp" />
@@ -211,7 +210,6 @@
     <ClCompile Include="src\utils\fps.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fps.h" />
     <ClInclude Include="include\components\BoxPhysics.h" />
     <ClInclude Include="include\components\ContactListener.h" />
     <ClInclude Include="include\components\Shader.h" />

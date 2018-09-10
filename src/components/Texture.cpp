@@ -10,6 +10,7 @@ Texture::Texture()
 
 void Texture::Generate(GLuint width, GLuint height, unsigned char* data)
 {
+	// Texture data
 	this->Width = width;
 	this->Height = height;
 	this->Data = data;

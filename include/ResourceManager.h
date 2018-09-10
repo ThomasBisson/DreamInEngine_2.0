@@ -45,8 +45,6 @@ private:
 	static Shader    loadShaderFromFile(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile = nullptr);
 	// Loads a single texture from file
 	static Texture loadTextureFromFile(const GLchar *file, GLboolean alpha);
-
-	//Texture LoadTexturesFromSpritesheet(const GLchar* file, GLboolean alpha, std::string name, unsigned int numRows, unsigned int numCols);
 };
 
 #endif
