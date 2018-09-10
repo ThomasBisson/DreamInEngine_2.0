@@ -197,6 +197,9 @@
     <ClCompile Include="libs\Box2D\Box2D\Dynamics\Contacts\b2PolygonContact.cpp">
       <Filter>libs\Box2D\Dynamics\Contacts</Filter>
     </ClCompile>
+    <ClCompile Include="src\components\ContactListener.cpp">
+      <Filter>src\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\imgui-1.64\include\ImGui\imconfig.h">
@@ -414,6 +417,9 @@
     </ClInclude>
     <ClInclude Include="libs\Box2D\Box2D\Dynamics\Contacts\b2PolygonContact.h">
       <Filter>libs\Box2D\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\ContactListener.h">
+      <Filter>src\components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

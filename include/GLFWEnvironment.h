@@ -6,8 +6,11 @@
 #define DREAMINENGINE_GLFWENVIRONMENT_H
 
 #include <iostream>
+#include <glm/detail/type_vec2.hpp>
 
 struct GLFWwindow;
+
+struct GLFWvidmode;
 
 // Include Windows
 #ifdef WIN32
@@ -31,7 +34,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height);
 
 class GLFWEnvironment {
 public:
-	GLFWEnvironment();
+	GLFWEnvironment(bool fullscreen = false, const std::string &title = "DreamIn Engine");
 
 	GLFWEnvironment(const std::string &title, unsigned width, unsigned height, bool fullscreen = false);
 
@@ -60,6 +63,7 @@ public:
 
 	void set_fullscreen(bool fullscreen);
 
+	const GLFWvidmode* get_resolution() const;
 private:
 	GLFWwindow * m_window;
 	std::string m_title;

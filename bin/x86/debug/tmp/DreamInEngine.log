@@ -1,4 +1,4 @@
 ﻿  SceneManager.cpp
-c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(169): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
-c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(168): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(182): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(181): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
   DreamInEngine.vcxproj -> C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe

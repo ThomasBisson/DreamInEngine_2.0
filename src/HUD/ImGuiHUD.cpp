@@ -10,6 +10,7 @@
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
 #include <glfw/glfw3.h>
+#include "ImGui/imgui_internal.h"
 
 ImGuiHUD::ImGuiHUD(SceneManager &scene_manager, GLFWEnvironment *glfw_environment,
 	bool install_callbacks) : m_scene_manager(scene_manager) {
@@ -60,9 +61,8 @@ int ImGuiHUD::init() {
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
 	// Setup style
-	ImGui::StyleColorsDark();
-	ImGui::StyleColorsClassic();
-
+	ImGui::StyleColorsLight();
+	
 	/// CONFIGURE AND SHOW A WINDOW
 	m_show_demo_window = true;
 	m_show_another_window = true;
@@ -77,36 +77,17 @@ void ImGuiHUD::update() {
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	// 1. Show a simple window.
-	// Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
-	{
-		static float f = 0.0f;
-		static int counter = 0;
-		ImGui::Text(
-			"Hello, world!");                           // Display some text (you can use a format string too)
-		ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-		ImGui::ColorEdit3("clear color", (float *)&m_clear_color); // Edit 3 floats representing a color
-
-		ImGui::Checkbox("Demo Window", &m_show_demo_window);      // Edit bools storing our windows open/close state
-		ImGui::Checkbox("Another Window", &m_show_another_window);
-
-		if (ImGui::Button(
-			"Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
-			counter++;
-		ImGui::SameLine();
-		ImGui::Text("counter = %d", counter);
-
-		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate,
-			ImGui::GetIO().Framerate);
-	}
-
 	//@TODO faire un menu qui ne prend pas de rectangle noir en dessous
 	ImGuiWindowFlags my_menubar_flags = 0;
 	//my_menubar_flags = ImGuiWindowFlags_AlwaysAutoResize;
 	my_menubar_flags += ImGuiWindowFlags_MenuBar;
 	my_menubar_flags += ImGuiWindowFlags_NoTitleBar;
+	my_menubar_flags += ImGuiWindowFlags_NoResize;
+	my_menubar_flags += ImGuiWindowFlags_NoCollapse;
 	ImGui::Begin("MenuBar", &m_show_menubar, my_menubar_flags);
+	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
 	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width(), 0));
+	ImGui::GetStyle().FrameBorderSize = 1.0f; // NOTE : La CHATTE sa mère !$$$$$$§§§§§! il a fallu piffer pour celui- là ! xP
 	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			showMyExampleMenuFile();
@@ -124,9 +105,10 @@ void ImGuiHUD::update() {
 	ImGuiWindowFlags my_window_scene_flags = 0;
 	//my_menubar_flags = ImGuiWindowFlags_AlwaysAutoResize;
 	my_window_scene_flags += ImGuiWindowFlags_MenuBar;
-	my_window_scene_flags += ImGuiWindowFlags_NoTitleBar;
+	my_window_scene_flags += ImGuiWindowFlags_NoMove;
 	ImGui::Begin("Window scene", &m_show_window_scene, my_window_scene_flags);
-	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.15f, m_glfw_environment->get_height()*0.70f));
+	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.15f, m_glfw_environment->get_height()*1.0f));
+	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f + m_glfw_environment->get_height() * 0.035f));
 	if (ImGui::BeginMenuBar()) {
 		if (ImGui::BeginMenu("File")) {
 			showMyExampleMenuFile();
@@ -152,9 +134,9 @@ void ImGuiHUD::update() {
 	ImGuiWindowFlags my_window_entity_flags = 0;
 	//my_menubar_flags = ImGuiWindowFlags_AlwaysAutoResize;
 	//my_window_scene_flags += ImGuiWindowFlags_MenuBar;
-	my_window_scene_flags += ImGuiWindowFlags_NoTitleBar;
 	ImGui::Begin("Window entity", &m_show_window_entity, my_window_entity_flags);
-	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.15f, m_glfw_environment->get_height()*0.70f));
+	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.15f, m_glfw_environment->get_height()*1.0f));
+	ImGui::SetWindowPos(ImVec2(m_glfw_environment->get_width() - ImGui::GetWindowWidth(), m_glfw_environment->get_height() * 0.035f));
 	if (entitySelected != -1 && sceneSelected != -1) {
 		Entity e = m_scene_manager.getScenes()[sceneSelected]->getEntities()[entitySelected];
 		ImGui::Text(e.name.c_str());
@@ -174,8 +156,7 @@ void ImGuiHUD::update() {
 
 	// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
 	if (m_show_demo_window) {
-		ImGui::SetNextWindowPos(ImVec2(650, 20),
-			ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
+		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
 		ImGui::ShowDemoWindow(&m_show_demo_window);
 	}
 }

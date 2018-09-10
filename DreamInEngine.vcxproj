@@ -194,6 +194,7 @@
     <ClCompile Include="libs\imgui-1.64\include\ImGui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\components\BoxPhysics.cpp" />
+    <ClCompile Include="src\components\ContactListener.cpp" />
     <ClCompile Include="src\components\Shader.cpp" />
     <ClCompile Include="src\components\Sprite.cpp" />
     <ClCompile Include="src\components\Texture.cpp" />
@@ -209,6 +210,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\components\BoxPhysics.h" />
+    <ClInclude Include="include\components\ContactListener.h" />
     <ClInclude Include="include\components\Shader.h" />
     <ClInclude Include="include\components\Sprite.h" />
     <ClInclude Include="include\components\Texture.h" />

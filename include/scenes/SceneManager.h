@@ -28,9 +28,11 @@ class SpriteRenderer;
 
 class GLFWEnvironment;
 
-enum MeshType {
-	TRIANGLE = 0, // @TODO: Not Implemented..
-	SQUARE = 1,
+typedef enum ProjectionType
+{
+	PROJECTION_CENTER_CENTER = 0,
+	PROJECTION_NORMALIZED_TOP_LEFT = 1,
+	PROJECTION_NORMALIZED_CENTER_CENTER = 2,
 };
 
 class SceneManager {
