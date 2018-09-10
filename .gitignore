@@ -1,6 +1,10 @@
 # Visual Studio
-#.vs
+.vs
 .vs/DreamInEngine/v15/Browse.VC.opendb
+
+# bin/ folder
+bin
+build
 
 # Prerequisites
 *.d
