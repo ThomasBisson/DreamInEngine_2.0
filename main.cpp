@@ -30,7 +30,7 @@ int main() {
 	/* Create one Scene in the Scene Manager */
 	sm->createScene("Aloha");
 
-	// Select a scene to be a 
+	// Select a scene to be active
 	sm->selectScene("Aloha");
 
 	/* Get the Scene Manager's first scene */
