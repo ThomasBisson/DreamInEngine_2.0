@@ -30,6 +30,7 @@ GLFWEnvironment::GLFWEnvironment(const std::string &title, unsigned width, unsig
 void GLFWEnvironment::process_input() {
 	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(m_window, true);
+		std::cout << "SPACE !!" << std::endl;
 	}
 	else if (glfwGetKey(m_window, GLFW_KEY_H) == GLFW_PRESS) {
 	}

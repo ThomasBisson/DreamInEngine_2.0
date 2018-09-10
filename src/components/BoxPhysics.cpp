@@ -32,11 +32,11 @@ b2Body* BoxPhysics::addRec(b2World *world, int x, int y, int w, int h, bool dyn)
 
 void BoxPhysics::BeginContact(b2Contact * contact)
 {
-	std::cout << "begin contact" << std::endl;
+	//std::cout << "begin contact" << std::endl;
 	body->ApplyForce(b2Vec2(90, 0), body->GetWorldCenter(), true);
 }
 
 void BoxPhysics::EndContact(b2Contact * contact)
 {
-	std::cout << "end contact" << std::endl;
+	//std::cout << "end contact" << std::endl;
 }
