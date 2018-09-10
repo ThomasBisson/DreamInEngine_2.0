@@ -200,6 +200,10 @@
     <ClCompile Include="src\components\ContactListener.cpp">
       <Filter>src\components</Filter>
     </ClCompile>
+    <ClCompile Include="fps.cpp" />
+    <ClCompile Include="src\utils\fps.cpp">
+      <Filter>src\utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\imgui-1.64\include\ImGui\imconfig.h">
@@ -420,6 +424,10 @@
     </ClInclude>
     <ClInclude Include="include\components\ContactListener.h">
       <Filter>src\components</Filter>
+    </ClInclude>
+    <ClInclude Include="fps.h" />
+    <ClInclude Include="include\utils\fps.h">
+      <Filter>src\utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

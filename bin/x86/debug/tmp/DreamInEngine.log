@@ -1,4 +1,5 @@
-﻿  SceneManager.cpp
-c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(182): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
-c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(181): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+﻿P:\Visual Studio Enterprise 2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(944,5): warning MSB8027: Deux ou plusieurs fichiers avec le nom fps.cpp généreront des sorties vers le même emplacement. Cela peut entraîner une génération incorrecte. Les fichiers impliqués sont fps.cpp, src\utils\fps.cpp.
+  SceneManager.cpp
+c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(195): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(194): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
   DreamInEngine.vcxproj -> C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe
