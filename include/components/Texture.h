@@ -12,8 +12,6 @@ public:
 
 	GLuint Width, Height; // Width and height of loaded image in pixels
 
-	unsigned char *Data;
-
 	// Texture Format
 	GLuint Internal_Format; // Format of texture object
 	GLuint Image_Format; // Format of loaded image

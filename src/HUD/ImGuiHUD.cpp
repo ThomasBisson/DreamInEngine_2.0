@@ -9,8 +9,51 @@
 #include "ImGui/imgui.h"
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
-#include <glfw/glfw3.h>
-#include "ImGui/imgui_internal.h"
+#include <ImGui/imgui_internal.h>
+
+/////////////////////////////////////////
+float value = 0.00f;
+float positionX = 0.00f, positionY = 0.00f;
+float sizeX = 0.00f, sizeY = 0.00f;
+float velocityX = 0.00f, velocityY = 0.00f;
+float rotation = 0.00f;
+
+bool queryComponentInfo = false;
+/////////////////////////////////////////
+bool* v = new bool[1]{ false };
+
+void ToggleButton(const char* str_id, bool* v)
+{
+	ImVec2 p = ImGui::GetCursorScreenPos();
+	ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
+	float height = ImGui::GetFrameHeight();
+	float width = height * 1.55f;
+	float radius = height * 0.50f;
+
+	ImGui::InvisibleButton(str_id, ImVec2(width, height));
+	if (ImGui::IsItemClicked())
+		*v = !*v;
+
+	float t = *v ? 1.0f : 0.0f;
+
+	ImGuiContext& g = *GImGui;
+	float ANIM_SPEED = 0.08f;
+	if (g.LastActiveId == g.CurrentWindow->GetID(str_id))// && g.LastActiveIdTimer < ANIM_SPEED)
+	{
+		float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
+		t = *v ? (t_anim) : (1.0f - t_anim);
+	}
+
+	ImU32 col_bg;
+	if (ImGui::IsItemHovered())
+		col_bg = ImGui::GetColorU32(ImLerp(ImVec4(0.78f, 0.78f, 0.78f, 1.0f), ImVec4(0.64f, 0.83f, 0.34f, 1.0f), t));
+	else
+		col_bg = ImGui::GetColorU32(ImLerp(ImVec4(0.85f, 0.85f, 0.85f, 1.0f), ImVec4(0.56f, 0.83f, 0.26f, 1.0f), t));
+
+	draw_list->AddRectFilled(p, ImVec2(p.x + width, p.y + height), col_bg, height * 0.5f);
+	draw_list->AddCircleFilled(ImVec2(p.x + radius + t * (width - radius * 2.0f), p.y + radius), radius - 1.5f, IM_COL32(255, 255, 255, 255));
+}
 
 ImGuiHUD::ImGuiHUD(SceneManager &scene_manager, GLFWEnvironment *glfw_environment,
 	bool install_callbacks) : m_scene_manager(scene_manager) {
@@ -35,14 +78,14 @@ ImGuiHUD::ImGuiHUD(SceneManager &scene_manager, GLFWEnvironment *glfw_environmen
 
 int ImGuiHUD::init() {
 	if (m_glfw_environment == nullptr) {
-		return -1;
+		std::cout << "Error: GLFW is not initialized for ImGui" << std::endl;
+		return false;
 	}
 
 	if (m_glfw_environment->get_window() == nullptr) {
-		return -1;
+		std::cout << "Error: GLFW window not initialized for ImGui" << std::endl;
+		return false;
 	}
-
-	// INIT GLEW ??? Already initialized in GLFW ?!
 
 	// Setup ImGui binding
 	IMGUI_CHECKVERSION();
@@ -62,95 +105,268 @@ int ImGuiHUD::init() {
 
 	// Setup style
 	ImGui::StyleColorsLight();
-	
-	/// CONFIGURE AND SHOW A WINDOW
-	m_show_demo_window = true;
-	m_show_another_window = true;
-	m_show_menubar = true;
+
+	// CONFIGURE AND SHOW A WINDOW
+	m_show_window_menubar = true;
 	m_show_window_scene = true;
 	m_show_window_entity = true;
-	m_clear_color = new ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+	m_show_another_window = true;
+	m_show_demo_window = true;
 }
 
 void ImGuiHUD::update() {
+	static int entitySelected = -1;
+	static int sceneSelected = -1;
+	static std::string componentSelected = "sprite";
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
 
-	//@TODO faire un menu qui ne prend pas de rectangle noir en dessous
-	ImGuiWindowFlags my_menubar_flags = 0;
-	//my_menubar_flags = ImGuiWindowFlags_AlwaysAutoResize;
-	my_menubar_flags += ImGuiWindowFlags_MenuBar;
-	my_menubar_flags += ImGuiWindowFlags_NoTitleBar;
-	my_menubar_flags += ImGuiWindowFlags_NoResize;
-	my_menubar_flags += ImGuiWindowFlags_NoCollapse;
-	ImGui::Begin("MenuBar", &m_show_menubar, my_menubar_flags);
-	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
-	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width(), 0));
-	ImGui::GetStyle().FrameBorderSize = 1.0f; // NOTE : La CHATTE sa mère !$$$$$$§§§§§! il a fallu piffer pour celui- là ! xP
-	if (ImGui::BeginMenuBar()) {
-		if (ImGui::BeginMenu("File")) {
-			showMyExampleMenuFile();
-			ImGui::EndMenu();
+	if (m_show_window_menubar)
+	{
+		//@TODO faire un menu qui ne prend pas de rectangle noir en dessous
+		ImGuiWindowFlags my_menubar_flags = 0;
+		my_menubar_flags += ImGuiWindowFlags_MenuBar;
+		my_menubar_flags += ImGuiWindowFlags_NoTitleBar;
+		my_menubar_flags += ImGuiWindowFlags_NoCollapse;
+		my_menubar_flags += ImGuiWindowFlags_NoMove;
+		ImGui::Begin("MenuBar", nullptr, my_menubar_flags);
+		ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
+		ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width(), 0));
+		if (ImGui::BeginMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				showMyExampleMenuFile();
+				ImGui::EndMenu();
+			}
+			if (ImGui::BeginMenu("Edit")) {
+				ImGui::EndMenu();
+			}
+			ImGui::EndMenuBar();
 		}
-		if (ImGui::BeginMenu("Edit")) {
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
+
+		this->UpdateCurrentWindowRectData(&m_window_menubar);
+
+		ImGui::End();
 	}
-	ImGui::End();
 
-	static int entitySelected = -1;
-	static int sceneSelected = -1;
 	ImGuiWindowFlags my_window_scene_flags = 0;
-	//my_menubar_flags = ImGuiWindowFlags_AlwaysAutoResize;
-	my_window_scene_flags += ImGuiWindowFlags_MenuBar;
-	my_window_scene_flags += ImGuiWindowFlags_NoMove;
-	ImGui::Begin("Window scene", &m_show_window_scene, my_window_scene_flags);
-	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height()*1.0f));
-	ImGui::SetWindowPos(ImVec2(0.0f, 0.0f + m_glfw_environment->get_height() * 0.035f));
-	if (ImGui::BeginMenuBar()) {
-		if (ImGui::BeginMenu("File")) {
-			showMyExampleMenuFile();
-			ImGui::EndMenu();
-		}
-		ImGui::EndMenuBar();
+	//my_window_scene_flags += ImGuiWindowFlags_NoMove;
+	//my_window_scene_flags += ImGuiWindowFlags_NoCollapse;
+	ImGui::Begin("Window scene", nullptr, my_window_scene_flags);
+	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height() - this->m_window_menubar.h));
+	ImGui::SetWindowPos(ImVec2(0, 0 + this->m_window_menubar.h));
 
-		ImGui::Spacing();
-		for (int i = 0; i < m_scene_manager.getScenes().size(); i++) {
-			if (ImGui::CollapsingHeader(m_scene_manager.getScenes()[i]->getName().c_str())) {
-				for (int j = 0; j < m_scene_manager.getScenes()[i]->getEntities().size(); j++) {
-					if (ImGui::Selectable(m_scene_manager.getScenes()[i]->getEntities()[j].name.c_str(), entitySelected == j)) {
-						entitySelected = j;
-						sceneSelected = i;
-					}
+	ImGui::Spacing();
+	for (int i = 0; i < m_scene_manager.getScenes().size(); i++) {
+		if (ImGui::CollapsingHeader(m_scene_manager.getScenes()[i]->getName().c_str())) {
+			for (int j = 0; j < m_scene_manager.getScenes()[i]->getEntities().size(); j++) {
+				if (ImGui::Selectable(m_scene_manager.getScenes()[i]->getEntities()[j].name.c_str(), entitySelected == j)) {
+					entitySelected = j;
+					sceneSelected = i;
 				}
 			}
 		}
 	}
+
+	this->UpdateCurrentWindowRectData(&m_window_scene);
+
 	ImGui::End();
 
 
-	ImGuiWindowFlags my_window_entity_flags = 0;
-	//my_menubar_flags = ImGuiWindowFlags_AlwaysAutoResize;
-	//my_window_scene_flags += ImGuiWindowFlags_MenuBar;
-	ImGui::Begin("Window entity", &m_show_window_entity, my_window_entity_flags);
-	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height()*1.0f));
-	ImGui::SetWindowPos(ImVec2(m_glfw_environment->get_width() - ImGui::GetWindowWidth(), m_glfw_environment->get_height() * 0.035f));
-	if (entitySelected != -1 && sceneSelected != -1) {
-		Entity e = m_scene_manager.getScenes()[sceneSelected]->getEntities()[entitySelected];
-		ImGui::Text(e.name.c_str());
-		ImGui::Spacing();
-		//ImGui::CollapsingHeader(.id)
+	if (m_show_window_entity)
+	{
+		ImGuiWindowFlags my_window_entity_flags = 0;
+		my_window_entity_flags = ImGuiWindowFlags_NoMove;
+		my_window_entity_flags += ImGuiWindowFlags_NoCollapse;
+		ImGui::Begin("Window entity", nullptr, my_window_entity_flags);
+		ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height() - this->m_window_menubar.h));
+		ImGui::SetWindowPos(ImVec2(m_glfw_environment->get_width() - ImGui::GetWindowWidth(), 0 + this->m_window_menubar.h));
+
+		ImGui::BeginGroup();
+			if (entitySelected != -1 && sceneSelected != -1)
+			{
+				Entity entity = m_scene_manager.getScenes()[sceneSelected]->getEntities()[entitySelected];
+				ImGui::Text(entity.name.c_str());
+				ImGui::Spacing();
+				// TODO: For the selected entity: Display all its components
+				// TODO: The displayed compoennts should be represented as Big Clickable Buttons
+				/*for(auto &component : m_scene_manager.getActualScene().getComponents(entity))
+				{
+					ImGui::Selectable(component.name);
+				}*/
+				if(ImGui::Button("[TEST] Sprite Component"))
+				{
+					// m_scene_manager.getActualScene()->getComponent(component_name, entity);
+					componentSelected = "sprite";
+					//entitySelected, already defined/selected
+					// sceneSelected, already defined/selected
+					queryComponentInfo = true;
+				}
+				// NOTE: Always add one more "button" -> add a new component to the selected entity
+				if (ImGui::Button("ADD COMPONENT")) // TODO: Improve the design of the button (add a "+" in a "circle" shape centered in the button)
+				{
+					/*m_scene_manager.getScenes()[sceneSelected]->add_component(component_name, selected_entity);*/
+				}
+
+				// TODO: Determine the utility of this ToggleButton
+				// ToggleButton("Test", v);
+			}
+		ImGui::EndGroup();
+										 // 0<=>stretch
+		ImGui::BeginChild("component_details", ImVec2(0.0f, ImGui::GetWindowHeight() / 2), true);
+			ImGui::Text("COMPONENT DETAILS");
+			ImGui::Spacing();
+			if(entitySelected != -1 && sceneSelected != -1 && queryComponentInfo && componentSelected == "sprite") // TOOD: only for test purpose ! Replace by better API calls
+			{
+				if (ImGui::TreeNode("Position"))
+				{
+						ImGui::BeginGroup();
+						// First line
+						ImGui::Text("X");
+						ImGui::SameLine();
+						if (ImGui::InputFloat(" position.x", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Position.x), 0.10f, 0, "%.3f")) // Text changed !
+						{
+						}
+						// Second line
+						ImGui::Text("Y");
+						ImGui::SameLine();
+						if (ImGui::InputFloat(" position.y", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Position.y), 0.10f, 0, "%.3f")) // Text changed !
+						{
+						}
+						ImGui::EndGroup();
+					ImGui::TreePop();
+				}
+
+				ImGui::Spacing();
+
+				// TODO: Add other tree nodes
+				if (ImGui::TreeNode("Size"))
+				{
+					ImGui::BeginGroup();
+					// First line
+					ImGui::Text("W");
+					ImGui::SameLine();
+					if (ImGui::InputFloat(" size.x", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Size.x), 0.10f, 0, "%.3f")) // Text changed !
+					{
+					}
+					// Second line
+					ImGui::Text("H");
+					ImGui::SameLine();
+					if (ImGui::InputFloat(" size.y", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Size.y), 0.10f, 0, "%.3f")) // Text changed !
+					{
+					}
+					ImGui::EndGroup();
+					ImGui::TreePop();
+				}
+
+				ImGui::Spacing();
+
+				if (ImGui::TreeNode("Velocity"))
+				{
+					ImGui::BeginGroup();
+					// First line
+					ImGui::Text("X");
+					ImGui::SameLine();
+					if (ImGui::InputFloat(" velocity.x", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Velocity.x), 0.10f, 0, "%.3f")) // Text changed !
+					{
+					}
+					// Second line
+					ImGui::Text("Y");
+					ImGui::SameLine();
+					if (ImGui::InputFloat(" velocity.y", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Velocity.y), 0.10f, 0, "%.3f")) // Text changed !
+					{
+					}
+					ImGui::EndGroup();
+					ImGui::TreePop();
+				}
+
+				ImGui::Spacing();
+
+				if (ImGui::TreeNode("Rotation"))
+				{
+					ImGui::BeginGroup();
+					ImGui::Text("Angle");
+					ImGui::SameLine();
+					if (ImGui::InputFloat("ï¿½", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Rotation), 0.10f, 0, "%.3f")) // Text changed !
+					{
+					}
+					ImGui::EndGroup();
+					ImGui::TreePop();
+				}
+
+				ImGui::Spacing();
+
+				if (ImGui::TreeNode("Color"))
+				{
+					ImGui::BeginGroup();
+					// First line
+					ImGui::Text("R");
+					ImGui::SameLine();
+					if (ImGui::InputFloat(" color.r", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Color.x), 0.10f, 0, "%.1f")) // Text changed !
+					{
+					}
+					// Second line
+					ImGui::Text("V");
+					ImGui::SameLine();
+					if (ImGui::InputFloat(" color.v", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Color.y), 0.10f, 0, "%.1f")) // Text changed !
+					{
+					}
+					// Third line
+					ImGui::Text("B");
+					ImGui::SameLine();
+					if (ImGui::InputFloat(" color.b", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Color.z), 1.0f, 0, "%.1f")) // Text changed !
+					{
+					}
+					ImGui::EndGroup();
+					ImGui::TreePop();
+				}
+			}
+		ImGui::EndChild();
+
+		this->UpdateCurrentWindowRectData(&m_window_entity);
+
+		ImGui::End();
 	}
-	ImGui::End();
 
 	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
 	if (m_show_another_window) {
-		ImGui::Begin("Another Window", &m_show_another_window);
+		ImGui::Begin("Another (Debug/Test) Window", &m_show_another_window);
+		ImGui::SetWindowSize(ImVec2(800, 400));
 		ImGui::Text("Hello from another window!");
 		if (ImGui::Button("Close Me"))
 			m_show_another_window = false;
+		ImGui::BeginColumns("tests", 2, false);
+		ImGui::Button("Row 1 Col 1");
+		ImGui::Button("Row 2 Col 1");
+		ImGui::NextColumn();
+		ImGui::Button("Row 1 & 2 Col 2");
+		ImGui::Button("O");
+		if (ImGui::IsItemClicked()) // Refers to the LAST button !
+		{
+			ImGui::Text("FFFFF");
+		}
+		ImGui::EndColumns();
+
+		if (ImGui::InputFloat("red", &value, 0.05f, 0, "%.3f")) // Text changed !
+		{
+			ImGui::Text("Focus (Edition): Text changed !");
+			ImGui::Text("Clicked with value : %.3f", value);
+			m_scene_manager.getScene("Aloha")->getEntities()[0], m_scene_manager.getScene("Aloha")->getSprites().get(m_scene_manager.getScene("Aloha")->getEntities()[0].id)->Position.x = value;
+
+			// TODO: Update component values !
+			/*for (int i = 0; i < m_scene_manager.getScenes().size(); i++) {
+			if (ImGui::CollapsingHeader(m_scene_manager.getScenes()[i]->getName().c_str())) {
+			for (int j = 0; j < m_scene_manager.getScenes()[i]->getEntities().size(); j++) {
+			if (ImGui::Selectable(m_scene_manager.getScenes()[i]->getEntities()[j].name.c_str(), entitySelected == j)) {
+			entitySelected = j;
+			sceneSelected = i;
+			}
+			}
+			}
+			}*/
+		}
+
 		ImGui::End();
 	}
 
@@ -231,3 +447,27 @@ void ImGuiHUD::showMyExampleMenuFile() {
 	if (ImGui::MenuItem("Checked", NULL, true)) {}
 	if (ImGui::MenuItem("Quit", "Alt+F4")) {}
 }
+
+void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
+{
+	window_rect->x = ImGui::GetWindowPos().x;
+	window_rect->y = ImGui::GetWindowPos().y;
+	window_rect->w = ImGui::GetWindowWidth();
+	window_rect->h = ImGui::GetWindowHeight();
+}
+
+// TODO: right click on button to update its content (can do the same with text !
+//static char name[32] = "Label1";
+//char buf[64]; sprintf(buf, "Button: %s###Button", name); // ### operator override ID ignoring the preceding label
+//ImGui::Button(buf);
+//if (ImGui::BeginPopupContextItem()) // When used after an item that has an ID (here the Button), we can skip providing an ID to BeginPopupContextItem().
+//{
+//	ImGui::Text("Edit name:");
+//	ImGui::InputText("##edit", name, IM_ARRAYSIZE(name));
+//	if (ImGui::Button("Close"))
+//		ImGui::CloseCurrentPopup();
+//	ImGui::EndPopup();
+//}
+//ImGui::SameLine(); ImGui::Text("(<-- right-click here)");
+
+// TODO: TextBox to modify

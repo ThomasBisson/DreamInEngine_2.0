@@ -13,7 +13,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 
 GLFWEnvironment::GLFWEnvironment(bool fullscreen, const std::string &title) {
 	m_window = nullptr;
-	m_title = "DreamIn Engine";
+	m_title = title;
 	m_width = 0; // defined later
 	m_height = 0; // idem (in init())
 	m_fullscreen = fullscreen;
@@ -25,6 +25,7 @@ GLFWEnvironment::GLFWEnvironment(const std::string &title, unsigned width, unsig
 	m_width = width;
 	m_height = height;
 	m_fullscreen = fullscreen;
+	ViewportRect = { 0, 0, width, height };
 }
 
 std::vector<InputEnum> GLFWEnvironment::process_input() {
@@ -84,12 +85,12 @@ int GLFWEnvironment::init() {
 	glfwSetFramebufferSizeCallback(glfwGetCurrentContext(), framebuffer_size_callback);
 }
 
-void GLFWEnvironment::update_viewport() {
-	int display_w, display_h;
-	glfwGetFramebufferSize(get_window(), &display_w, &display_h);
-	m_width = (unsigned)display_w;
-	m_height = (unsigned)display_h;
-	glViewport(0, 0, m_width, m_height);
+void GLFWEnvironment::update_viewport(int x, int y, int width, int height) {
+	ViewportRect.x = x;
+	ViewportRect.y = y;
+	ViewportRect.w = width;
+	ViewportRect.h = height;
+	glViewport(ViewportRect.x, ViewportRect.y, ViewportRect.w, ViewportRect.h);
 }
 
 int GLFWEnvironment::quit() {

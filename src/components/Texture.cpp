@@ -13,11 +13,10 @@ void Texture::Generate(GLuint width, GLuint height, unsigned char* data)
 	// Texture data
 	this->Width = width;
 	this->Height = height;
-	this->Data = data;
 
 	// Create Texture
 	glBindTexture(GL_TEXTURE_2D, this->ID);
-	glTexImage2D(GL_TEXTURE_2D, 0, this->Internal_Format, width, height, 0, this->Image_Format, GL_UNSIGNED_BYTE, this->Data);
+	glTexImage2D(GL_TEXTURE_2D, 0, this->Internal_Format, width, height, 0, this->Image_Format, GL_UNSIGNED_BYTE, data);
 	// Set Texture wrap and filter modes
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, this->Wrap_S);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, this->Wrap_T);

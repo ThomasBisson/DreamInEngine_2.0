@@ -33,7 +33,7 @@ SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
 	// 
 	glm::mat4 projections[] = {
 		glm::ortho(0.0f, static_cast<GLfloat>(glfw_environment->get_width()), static_cast<GLfloat>(glfw_environment->get_height()), 0.0f, -1.0f, 1.0f), // Normalized TOP LEFT
-		glm::ortho(static_cast<GLfloat>(-1920 / 2), static_cast<GLfloat>(1920 / 2), static_cast<GLfloat>(-1080 / 2), static_cast<GLfloat>(1080 / 2), -1.0f, 1.0f) // Normalized CENTER CENTER
+		glm::ortho(static_cast<GLfloat>((m_glfw_environment->get_width()) / 2), static_cast<GLfloat>(m_glfw_environment->get_width() / 2), static_cast<GLfloat>(m_glfw_environment->get_height() / 2), static_cast<GLfloat>(m_glfw_environment->get_height() / 2), -1.0f, 1.0f) // Normalized CENTER CENTER
 	};
 
 	ResourceManager::GetShader("sprite_shader").Use().SetInteger("image", 0);
@@ -62,7 +62,7 @@ void SceneManager::start() {
 
 void SceneManager::run() {
 	while (!m_glfw_environment->quit()) {
-		
+
 		utils::get_fps();
 
 		glfwPollEvents();
@@ -72,10 +72,20 @@ void SceneManager::run() {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		// TODO: Trigger a viewPort update => Update Scene(s) frame to fit the screen
+		// TODO: Create window explorer at the bottom of the screen
+		// TODO: Add window explorer to viewport's height calculation(s)
+		
+		// [IMPORTANT WARNING]: Viewport & Scissor have their ORIGIN (0;0) to LOWER LEFT ! 
+		int x = m_ImGui_HUD->m_window_scene.w + m_ImGui_HUD->m_window_scene.x /* This last one is for responsive design ! */;
+		int y = 400; // 400 <=> window explorer's height
+		unsigned int width = m_ImGui_HUD->m_window_entity.x - x; // NOTE: Not very reliable..
+		unsigned int height = 1080 - 400 - m_ImGui_HUD->m_window_menubar.h; // 400 <=> window explorer's height
+
 		/* (Re)Define the zone where OpenGL can Draw/Render things */
 		glEnable(GL_SCISSOR_TEST);
-		glScissor(1920 / 4, 1080 / 4, 1920 / 2, 1080 / 2); // Redefine the OpenGL's drawable zone
-		glViewport(1920 / 4, 1080 / 4, 1920 / 2, 1080 / 2);
+		glScissor(x, y, width, height); // Redefine the OpenGL's drawable zone
+		glViewport(x, y, width, height);
 		glClearColor(0.6f, 0.6f, 0.6f, 1.0f); // Clear only the defined zone
 		glClear(GL_COLOR_BUFFER_BIT);
 		glDisable(GL_SCISSOR_TEST);
@@ -181,7 +191,7 @@ void SceneManager::new_sprite(std::string sceneName, Entity entity, Texture text
 }
 
 void SceneManager::update_sprite(Sprite *sprite) {
-
+	//sprite->Position.x += 1;
 }
 
 void SceneManager::render_sprite(Sprite *sprite) {
