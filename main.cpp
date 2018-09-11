@@ -39,19 +39,6 @@ int main() {
 	sm->getScene("Aloha")->getEntities().emplace_back(Entity("pokeball_entity", 2));
 	std::cout << sm->getScene("Aloha")->getEntities()[0].name << std::endl;
 
-	//sm->new_sprite(sm->getActualScene().getEntities()[0].id, ResourceManager::GetTexture("container"), glm::vec2(50.0f, 50.0f));
-	sm->new_sprite(sm->getActualScene().getEntities()[1].id, ResourceManager::GetTexture("face"), glm::vec2(50.0f, 300.0f));
-	sm->new_sprite(sm->getActualScene().getEntities()[2].id, ResourceManager::GetTexture("pokeball"), glm::vec2(50.0f, 500.0f));
-
-	// sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id)->Position += 400.0f;
-
-	// [CRITICAL] TODO: solve the case where a component (ex: Sprite) can't be updated (Position/Rotation/etc..) while having an attached Box2D collider
-	sm->addBox2D(/*"Aloha", */sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id), true);
-	//sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[1], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[1].id), true);
-	sm->addBox2D(/*"Aloha", */sm->getScene("Aloha")->getEntities()[2],sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[2].id), false);
-
-	sm->addInput(/*"Aloha", */sm->getScene("Aloha")->getEntities()[1]);
-
 	sm->start();
 	
 	return 0;

@@ -49,10 +49,21 @@ bool SceneManager::init() {
 	bool success = true;
 
 	// @TODO: Do initialization stuff here !
-	this->add_component(INPUT, 0);
 	this->add_component(SPRITE, 0);
+	//this->get_components(0); // entity 0's component mask
+	this->add_component(SPRITE, 1);
+	this->add_component(INPUT, 1);
 
-	this->get_components(0); // entity 0's component mask
+	//this->new_sprite(this->getActualScene().getEntities()[0].id, ResourceManager::GetTexture("container"), glm::vec2(50.0f, 50.0f));
+	//this->new_sprite(this->getActualScene().getEntities()[1].id, ResourceManager::GetTexture("face"), glm::vec2(50.0f, 300.0f));
+	this->new_sprite(this->getActualScene().getEntities()[2].id, ResourceManager::GetTexture("pokeball"), glm::vec2(50.0f, 500.0f));
+
+	// this->getScene("Aloha")->getEntities()[0], this->getScene("Aloha")->getSprites().get(this->getScene("Aloha")->getEntities()[0].id)->Position += 400.0f;
+
+	// [CRITICAL] TODO: solve the case where a component (ex: Sprite) can't be updated (Position/Rotation/etc..) while having an attached Box2D collider
+	this->addBox2D(this->getActualScene().getEntities()[0], this->getActualScene().getSprites().get(this->getActualScene().getEntities()[0].id), true);
+	//this->addBox2D(this->getScene("Aloha")->getEntities()[1], this->getScene("Aloha")->getSprites().get(this->getScene("Aloha")->getEntities()[1].id), true);
+	this->addBox2D(this->getActualScene().getEntities()[2], this->getActualScene().getSprites().get(this->getActualScene().getEntities()[2].id), false);
 
 	return success;
 }
@@ -80,10 +91,10 @@ void SceneManager::run() {
 		// TODO: Trigger a viewPort update => Update Scene(s) frame to fit the screen
 		// TODO: Create window explorer at the bottom of the screen
 		// TODO: Add window explorer to viewport's height calculation(s)
-		
+
 		// [IMPORTANT WARNING]: Viewport & Scissor have their ORIGIN (0;0) to LOWER LEFT ! 
 		int x = m_ImGui_HUD->m_window_scene.w + m_ImGui_HUD->m_window_scene.x /* This last one is for responsive design ! */;
-		int y = m_glfw_environment->get_height()/7; // 400 <=> window explorer's height
+		int y = m_glfw_environment->get_height() / 7; // 400 <=> window explorer's height
 		unsigned int width = m_ImGui_HUD->m_window_entity.x - x; // NOTE: Not very reliable..
 		unsigned int height = m_glfw_environment->get_height() - m_glfw_environment->get_height() / 4 - m_ImGui_HUD->m_window_menubar.h; // 400 <=> window explorer's height
 
@@ -214,29 +225,42 @@ void SceneManager::addBox2D(/*std::string sceneName, */Entity entity, Sprite *sp
 
 void SceneManager::addInput(/*std::string sceneName, */Entity entity) {
 	/*m_scenes[m_index_scene[sceneName]]*/m_actualScene->add_input(entity);
+}
+
+bool has_component(unsigned int entity_mask, unsigned int component_mask)
+{
+	return (entity_mask & component_mask) == component_mask;
+}
+
 bool SceneManager::add_component(ComponentType component_type, unsigned int entity_id)
 {
 	// TODO: check if entity_id is valid (in getEntities() range);
-	if(entity_id >= this->getActualScene().getEntities().size())
+	if (entity_id >= this->getActualScene().getEntities().size())
 	{
 		return false;
 	}
 
-	this->getActualScene().getEntities()[entity_id].mask |= component_type;
+	auto &entityMask = this->getActualScene().getEntities()[entity_id].mask |= component_type;
 
-	if(component_type == SPRITE)
+	if (component_type == SPRITE)
 	{
 		this->new_sprite(entity_id);
-
+	}
+	// TODO: make a hasComponent(entityMask, componentMask)
+	if(has_component(entityMask, SPRITE))
+	{
+		// TODO: Put Box2D parameters via the mask
 		if (component_type == BOX2D) // Can only have physics if the entity has a Sprite
 		{
 			//this->getActualScene().getBoxPhysics().add(new BoxPhysics(), entity_id);
 		}
 		if (component_type == INPUT)
 		{
-			
+			this->addInput(this->getActualScene().getEntities()[entity_id]);
 		}
 	}
+
+	
 	// TODO: not good !
 	else
 	{
@@ -258,7 +282,7 @@ std::vector<unsigned int> SceneManager::get_components(unsigned int entity_id)
 	unsigned int entityMask = this->getActualScene().getEntities()[entity_id].mask;
 	unsigned int component_type = 1;
 
-	for(int i = 0; component_type<<i < COMPONENT_TOTAL; ++i)
+	for (int i = 0; component_type << i < COMPONENT_TOTAL; ++i)
 	{
 		unsigned int component_mask = component_type << i;
 		if ((entityMask & component_mask) == component_mask)
