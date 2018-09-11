@@ -10,7 +10,7 @@
 
 int main() {
 	//GLFWEnvironment* m_glfw_environment = new GLFWEnvironment("DreamIn Engine", 1920, 1080, GL_FALSE);
-	GLFWEnvironment* m_glfw_environment = new GLFWEnvironment(true);
+	GLFWEnvironment* m_glfw_environment = new GLFWEnvironment(false);
 	m_glfw_environment->init();
 
 	glewExperimental = GL_TRUE;
