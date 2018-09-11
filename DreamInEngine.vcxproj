@@ -195,6 +195,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="src\components\BoxPhysics.cpp" />
     <ClCompile Include="src\components\ContactListener.cpp" />
+    <ClCompile Include="src\components\Input.cpp" />
     <ClCompile Include="src\components\Shader.cpp" />
     <ClCompile Include="src\components\Sprite.cpp" />
     <ClCompile Include="src\components\Texture.cpp" />
@@ -213,6 +214,7 @@
   <ItemGroup>
     <ClInclude Include="include\components\BoxPhysics.h" />
     <ClInclude Include="include\components\ContactListener.h" />
+    <ClInclude Include="include\components\Input.h" />
     <ClInclude Include="include\components\Shader.h" />
     <ClInclude Include="include\components\Sprite.h" />
     <ClInclude Include="include\components\Texture.h" />

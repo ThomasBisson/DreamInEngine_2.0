@@ -86,7 +86,7 @@ void SceneManager::run() {
 
 		if (m_actualScene) // Selected scene
 		{
-			m_actualScene->update();
+			m_actualScene->update(std::vector<InputEnum>());
 
 			// TODO: Test MultiRendering from different views/(<=>viewports)/perspectives
 			m_actualScene->render();

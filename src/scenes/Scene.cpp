@@ -18,7 +18,7 @@ void Scene::update(std::vector<InputEnum> inputs) {
 }
 
 void Scene::render() {
-	update();
+	update(std::vector<InputEnum>());
 	for (auto &sprite : m_sprites.getVector()) {
 		m_sceneManager->update_sprite(sprite);
 		m_sceneManager->render_sprite(sprite);

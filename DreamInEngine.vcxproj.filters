@@ -206,6 +206,9 @@
     <ClCompile Include="src\systems\InputSystem.cpp">
       <Filter>src\systems</Filter>
     </ClCompile>
+    <ClCompile Include="src\components\Input.cpp">
+      <Filter>src\components</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\imgui-1.64\include\ImGui\imconfig.h">
@@ -435,6 +438,9 @@
     </ClInclude>
     <ClInclude Include="include\utils\InputEnum.h">
       <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\components\Input.h">
+      <Filter>src\components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

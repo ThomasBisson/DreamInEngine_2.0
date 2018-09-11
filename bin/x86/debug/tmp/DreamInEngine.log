@@ -1,5 +1,1 @@
-﻿  GLFWEnvironment.cpp
-  fps.cpp
-  Génération de code en cours...
-c:\users\asus pc\documents\github\dreaminengine_2.0\src\glfwenvironment.cpp(83): warning C4715: 'GLFWEnvironment::init' : les chemins de contrôle ne retournent pas tous une valeur
-  DreamInEngine.vcxproj -> C:\Users\asus pc\Documents\GitHub\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe
+﻿  DreamInEngine.vcxproj -> C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe
