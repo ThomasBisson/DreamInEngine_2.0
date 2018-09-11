@@ -44,10 +44,16 @@ typedef enum : unsigned int
 	SPRITE = 1 << 0,
 	BOX2D = 1 << 1,
 	INPUT = 1 << 2,
-	HIT = 1 << 3,
-	OTHER = 1 << 4,
-	COMPONENT_TOTAL = 1 << 5,
+	COMPONENT_TOTAL = 1 << 3,
 } ComponentType;
+
+typedef struct BooleanCustom
+{
+	BooleanCustom() : Result(false), Message("") { }
+	BooleanCustom(bool result, std::string message) : Result(result), Message(std::move(message)) { }
+	bool Result;
+	std::string Message;
+} BooleanCustom;
 
 class SceneManager {
 
@@ -81,7 +87,7 @@ public:
 
 	/* Run
 	 * Run this manager to start updating and rendering */
-	void run();
+	void run() const;
 
 	/* Create Scene
 	 * Create a new scene with a given name
@@ -138,14 +144,17 @@ public:
 	void render_sprite(Sprite *sprite);
 
 	// @NOTE: For Real-Time Game modification
-	void addBox2D(Entity entity, Sprite *s, bool dynamicBody);
+	void addBox2D(Entity entity, Sprite *sprite, bool dynamicBody);
 
 	void addInput(Entity entity);
 
 	void setRunningConfigEnum(RunningConfigEnum rce) { m_runningConfigEnum = rce; }
-	RunningConfigEnum getRunningConfigEnum() { return m_runningConfigEnum; }
+	RunningConfigEnum getRunningConfigEnum() const { return m_runningConfigEnum; }
 
-	bool add_component(ComponentType component_type, unsigned int entity_id);
+	BooleanCustom add_component(ComponentType component_type, unsigned int entity_id);
+
+	template<typename T>
+	T* get_component(ComponentType component_type, unsigned int entity_id);
 
 	// TODO: get components for 1 entity
 	std::vector<unsigned int> get_components(unsigned int entity_id);

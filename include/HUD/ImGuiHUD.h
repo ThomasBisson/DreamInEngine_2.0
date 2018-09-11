@@ -28,10 +28,10 @@ public:
      * */
     int init();
 
-    /* Configure ImGui window(s) EVERY FRAME */
+    // Configure ImGui window(s) EVERY FRAME
     void update();
 
-    /* Render/Show the ImGui frame(s) */
+    // Render/Show the ImGui frame(s)
     void render();
 
     void close();
@@ -47,12 +47,16 @@ private:
     SceneManager &m_scene_manager;
     GLFWEnvironment *m_glfw_environment;
     bool m_install_callbacks;
+
+	// Debug windows
     bool m_show_demo_window;
     bool m_show_another_window;
-
-    bool m_show_window_menubar;
+    
+	// DreamIn Engine main frames
+	bool m_show_window_menubar;
     bool m_show_window_scene;
 	bool m_show_window_entity;
+	bool m_show_window_explorer;
 };
 
 

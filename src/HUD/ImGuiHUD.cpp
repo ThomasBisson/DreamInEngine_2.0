@@ -17,19 +17,27 @@ float positionX = 0.00f, positionY = 0.00f;
 float sizeX = 0.00f, sizeY = 0.00f;
 float velocityX = 0.00f, velocityY = 0.00f;
 float rotation = 0.00f;
-
-bool queryComponentInfo = false;
 /////////////////////////////////////////
 bool* v = new bool[1]{ false };
+
+#pragma region COMPONENT DATA (ENUM & STRING)
+//std::string component_type_str[4] = {
+//	"No Component",
+//	"Sprite Component",
+//	"BoxPhysics Component",
+//	"Input Component"
+//};
+std::unordered_map<unsigned int, std::string> component_names_map;
+#pragma endregion
 
 void ToggleButton(const char* str_id, bool* v)
 {
 	ImVec2 p = ImGui::GetCursorScreenPos();
 	ImDrawList* draw_list = ImGui::GetWindowDrawList();
 
-	float height = ImGui::GetFrameHeight();
-	float width = height * 1.55f;
-	float radius = height * 0.50f;
+	const float height = ImGui::GetFrameHeight();
+	const float width = height * 1.55f;
+	const float radius = height * 0.50f;
 
 	ImGui::InvisibleButton(str_id, ImVec2(width, height));
 	if (ImGui::IsItemClicked())
@@ -38,7 +46,7 @@ void ToggleButton(const char* str_id, bool* v)
 	float t = *v ? 1.0f : 0.0f;
 
 	ImGuiContext& g = *GImGui;
-	float ANIM_SPEED = 0.08f;
+	const float ANIM_SPEED = 0.08f;
 	if (g.LastActiveId == g.CurrentWindow->GetID(str_id))// && g.LastActiveIdTimer < ANIM_SPEED)
 	{
 		float t_anim = ImSaturate(g.LastActiveIdTimer / ANIM_SPEED);
@@ -101,23 +109,33 @@ int ImGuiHUD::init() {
 #else
 	const char* glsl_version = "#version 130";
 #endif
+
 	ImGui_ImplOpenGL3_Init(glsl_version);
 
 	// Setup style
 	ImGui::StyleColorsLight();
 
-	// CONFIGURE AND SHOW A WINDOW
+	// DreamIn Engine main frames
 	m_show_window_menubar = true;
 	m_show_window_scene = true;
 	m_show_window_entity = true;
+	m_show_window_explorer = true;
+	// Debug frames
 	m_show_another_window = true;
 	m_show_demo_window = true;
+
+	//TODO: never forget to update this map when adding a new type
+	component_names_map[SPRITE] = "Sprite Component";
+	component_names_map[INPUT] = "Input Component";
+	component_names_map[BOX2D] = "BoxPhysics Component";
 }
 
 void ImGuiHUD::update() {
 	static int entitySelected = -1;
 	static int sceneSelected = -1;
-	static std::string componentSelected = "sprite";
+	static unsigned int component_selected = SPRITE;
+	static bool queryComponentInfo = false; // TODO: See if it is really useful in the future
+	static BooleanCustom query_add_component = BooleanCustom();
 
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
@@ -131,9 +149,11 @@ void ImGuiHUD::update() {
 		my_menubar_flags += ImGuiWindowFlags_NoTitleBar;
 		my_menubar_flags += ImGuiWindowFlags_NoCollapse;
 		my_menubar_flags += ImGuiWindowFlags_NoMove;
+
 		ImGui::Begin("MenuBar", nullptr, my_menubar_flags);
 		ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
 		ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width(), 0));
+
 		if (ImGui::BeginMenuBar()) {
 			if (ImGui::BeginMenu("File")) {
 				showMyExampleMenuFile();
@@ -145,7 +165,7 @@ void ImGuiHUD::update() {
 			ImGui::EndMenuBar();
 		}
 		if (ImGui::Button("play")) {
-			if(m_scene_manager.getRunningConfigEnum() == CONFIG)
+			if (m_scene_manager.getRunningConfigEnum() == CONFIG)
 				m_scene_manager.setRunningConfigEnum(RUNNING);
 			else
 				m_scene_manager.setRunningConfigEnum(CONFIG);
@@ -157,19 +177,21 @@ void ImGuiHUD::update() {
 	}
 
 	ImGuiWindowFlags my_window_scene_flags = 0;
-	//my_window_scene_flags += ImGuiWindowFlags_NoMove;
-	//my_window_scene_flags += ImGuiWindowFlags_NoCollapse;
+	my_window_scene_flags += ImGuiWindowFlags_NoMove;
+	my_window_scene_flags += ImGuiWindowFlags_NoCollapse;
+
 	ImGui::Begin("Window scene", nullptr, my_window_scene_flags);
 	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height() - this->m_window_menubar.h));
 	ImGui::SetWindowPos(ImVec2(0, 0 + this->m_window_menubar.h));
-
 	ImGui::Spacing();
-	for (int i = 0; i < m_scene_manager.getScenes().size(); i++) {
+	for (unsigned int i = 0; i < m_scene_manager.getScenes().size(); i++) {
 		if (ImGui::CollapsingHeader(m_scene_manager.getScenes()[i]->getName().c_str())) {
-			for (int j = 0; j < m_scene_manager.getScenes()[i]->getEntities().size(); j++) {
+			for (unsigned int j = 0; j < m_scene_manager.getScenes()[i]->getEntities().size(); j++) {
 				if (ImGui::Selectable(m_scene_manager.getScenes()[i]->getEntities()[j].name.c_str(), entitySelected == j)) {
 					entitySelected = j;
 					sceneSelected = i;
+					// Reset the text triggered by the ADD COMPONENT (when we click on an entity in the "window scene")
+					query_add_component = BooleanCustom();
 				}
 			}
 		}
@@ -185,62 +207,80 @@ void ImGuiHUD::update() {
 		ImGuiWindowFlags my_window_entity_flags = 0;
 		my_window_entity_flags = ImGuiWindowFlags_NoMove;
 		my_window_entity_flags += ImGuiWindowFlags_NoCollapse;
+
 		ImGui::Begin("Window entity", nullptr, my_window_entity_flags);
 		ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height() - this->m_window_menubar.h));
 		ImGui::SetWindowPos(ImVec2(m_glfw_environment->get_width() - ImGui::GetWindowWidth(), 0 + this->m_window_menubar.h));
 
 		ImGui::BeginGroup();
-			if (entitySelected != -1 && sceneSelected != -1)
+		if (entitySelected != -1 && sceneSelected != -1)
+		{
+			Entity entity = m_scene_manager.getActualScene().getEntities()[entitySelected];
+			ImGui::Text("%s (id: %d, mask: %d)", entity.name.c_str(), entity.id, entity.mask);
+			ImGui::Spacing();
+			// TODO: For the selected entity: Display all its components
+			// TODO: The displayed compoennts should be represented as Big Clickable Buttons 
+			for(unsigned int component_type : m_scene_manager.get_components(entity.id))
 			{
-				Entity entity = m_scene_manager.getScenes()[sceneSelected]->getEntities()[entitySelected];
-				ImGui::Text(entity.name.c_str());
-				ImGui::Spacing();
-				// TODO: For the selected entity: Display all its components
-				// TODO: The displayed compoennts should be represented as Big Clickable Buttons
-				/*for(auto &component : m_scene_manager.getActualScene().getComponents(entity))
+				if(ImGui::Button( (component_names_map[component_type]).c_str() )) // button pressed ?
 				{
-					ImGui::Selectable(component.name);
-				}*/
-				if(ImGui::Button("[TEST] Sprite Component"))
+					component_selected = component_type;
+				}
+			}
+			//if (ImGui::Button("[TEST] Sprite Component"))
+			//{
+			//	// m_scene_manager.getActualScene()->getComponent(component_name, entity);
+			//	componentSelected = "sprite";
+			//	//entitySelected, already defined/selected
+			//	// sceneSelected, already defined/selected
+
+			//}
+
+			// NOTE: Always add one more "button" -> add a new component to the selected entity
+			if (ImGui::Button("ADD COMPONENT")) // TODO: Improve the design of the button (add a "+" in a "circle" shape centered in the button)
+			{
+				// TODO: Do a select box menu and take the result as a ComponentTypeStr and convert it to a ComponentType to invoke add_component(type,entity) method
+				query_add_component = m_scene_manager.add_component(INPUT, m_scene_manager.getActualScene().getEntities()[entitySelected].id);
+				if (!std::empty(query_add_component.Message))
 				{
-					// m_scene_manager.getActualScene()->getComponent(component_name, entity);
-					componentSelected = "sprite";
-					//entitySelected, already defined/selected
-					// sceneSelected, already defined/selected
 					queryComponentInfo = true;
 				}
-				// NOTE: Always add one more "button" -> add a new component to the selected entity
-				if (ImGui::Button("ADD COMPONENT")) // TODO: Improve the design of the button (add a "+" in a "circle" shape centered in the button)
-				{
-					/*m_scene_manager.getScenes()[sceneSelected]->add_component(component_name, selected_entity);*/
-				}
-
-				// TODO: Determine the utility of this ToggleButton
-				// ToggleButton("Test", v);
 			}
+
+			if (queryComponentInfo && !std::empty(query_add_component.Message))
+			{
+				ImGui::TextColored((query_add_component.Result ? ImVec4(0.0f, 0.5f, 0.0f, 1.0f) : ImVec4(0.7f, 0.0f, 0.0f, 1.0f)), query_add_component.Message.c_str()); // Color TEXT !!!
+			}
+
+			// TODO: Determine the utility of this ToggleButton
+			// ToggleButton("Test", v);
+		}
 		ImGui::EndGroup();
-										 // 0<=>stretch
+		// 0<=>stretch
 		ImGui::BeginChild("component_details", ImVec2(0.0f, ImGui::GetWindowHeight() / 2), true);
-			ImGui::Text("COMPONENT DETAILS");
-			ImGui::Spacing();
-			if(entitySelected != -1 && sceneSelected != -1 && queryComponentInfo && componentSelected == "sprite") // TOOD: only for test purpose ! Replace by better API calls
+		ImGui::Text("COMPONENT DETAILS");
+		ImGui::Spacing();
+		// TODO: Make a component info file (or Interface with Strategy pattern) to define what to do with each component !
+		if (entitySelected != -1 && sceneSelected != -1) // TOOD: only for test purpose ! Replace by better API calls
+		{
+			if(component_selected == SPRITE)
 			{
 				if (ImGui::TreeNode("Position"))
 				{
-						ImGui::BeginGroup();
-						// First line
-						ImGui::Text("X");
-						ImGui::SameLine();
-						if (ImGui::InputFloat(" position.x", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Position.x), 0.10f, 0, "%.3f")) // Text changed !
-						{
-						}
-						// Second line
-						ImGui::Text("Y");
-						ImGui::SameLine();
-						if (ImGui::InputFloat(" position.y", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Position.y), 0.10f, 0, "%.3f")) // Text changed !
-						{
-						}
-						ImGui::EndGroup();
+					ImGui::BeginGroup();
+					// First line
+					ImGui::Text("X");
+					ImGui::SameLine();
+					if (ImGui::InputFloat(" position.x", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Position.x), 0.10f, 0, "%.3f")) // Text changed !
+					{
+					}
+					// Second line
+					ImGui::Text("Y");
+					ImGui::SameLine();
+					if (ImGui::InputFloat(" position.y", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Position.y), 0.10f, 0, "%.3f")) // Text changed !
+					{
+					}
+					ImGui::EndGroup();
 					ImGui::TreePop();
 				}
 
@@ -273,7 +313,7 @@ void ImGuiHUD::update() {
 					ImGui::BeginGroup();
 					ImGui::Text("Angle");
 					ImGui::SameLine();
-					if (ImGui::InputFloat("�", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Rotation), 0.10f, 0, "%.3f")) // Text changed !
+					if (ImGui::InputFloat("°", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Rotation), 0.10f, 0, "%.3f")) // Text changed !
 					{
 					}
 					ImGui::EndGroup();
@@ -307,6 +347,82 @@ void ImGuiHUD::update() {
 					ImGui::TreePop();
 				}
 			}
+
+			if(component_selected == INPUT)
+			{
+				if (ImGui::TreeNode("Key Mapping"))
+				{
+					ImGui::BeginGroup();
+					// First line
+					ImGui::Text("Left");
+					ImGui::SameLine();
+					InputEnum *keyLeft = &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_left);
+					int *keyLeftInt = (int*)keyLeft;
+					if (ImGui::InputInt(" left", keyLeftInt)); // Text changed !
+					{
+					}
+					// Second line
+					ImGui::Text("Right");
+					ImGui::SameLine();
+					InputEnum *keyRight = &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_right);
+					int *keyRightInt = (int*)keyRight;
+					if (ImGui::InputInt(" right", keyRightInt)); // Text changed !
+					{
+					}
+					// Third line
+					ImGui::Text("Down");
+					ImGui::SameLine();
+					InputEnum *keyDown = &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_down);
+					int *keyDownInt = (int*)keyDown;
+					if (ImGui::InputInt(" down", keyDownInt)); // Text changed !
+					{
+					}
+					// Fourth line
+					ImGui::Text("Up");
+					ImGui::SameLine();
+					InputEnum *keyUp = &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_up);
+					int *keyUpInt = (int*)keyUp;
+					if (ImGui::InputInt(" up", keyUpInt)); // Text changed !
+					{
+					}
+					ImGui::EndGroup();
+					ImGui::TreePop();
+				}
+
+				ImGui::Spacing();
+
+				if (ImGui::TreeNode("Key Speed"))
+				{
+					ImGui::BeginGroup();
+					// First line
+					ImGui::Text("Left");
+					ImGui::SameLine();
+					if (ImGui::InputInt(" left", &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_speed_left))); // Text changed !
+					{
+					}
+					// Second line
+					ImGui::Text("Right");
+					ImGui::SameLine();
+					if (ImGui::InputInt(" right", &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_speed_right))); // Text changed !
+					{
+					}
+					// Third line
+					ImGui::Text("Down");
+					ImGui::SameLine();
+					if (ImGui::InputInt(" down", &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_speed_down))); // Text changed !
+					{
+					}
+					// Fourth line
+					ImGui::Text("Up");
+					ImGui::SameLine();
+					if (ImGui::InputInt(" up", &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_speed_up))); // Text changed !
+					{
+					}
+					ImGui::EndGroup();
+					ImGui::TreePop();
+				}
+			}
+		}
 		ImGui::EndChild();
 
 		this->UpdateCurrentWindowRectData(&m_window_entity);
@@ -338,18 +454,6 @@ void ImGuiHUD::update() {
 			ImGui::Text("Focus (Edition): Text changed !");
 			ImGui::Text("Clicked with value : %.3f", value);
 			m_scene_manager.getScene("Aloha")->getEntities()[0], m_scene_manager.getScene("Aloha")->getSprites().get(m_scene_manager.getScene("Aloha")->getEntities()[0].id)->Position.x = value;
-
-			// TODO: Update component values !
-			/*for (int i = 0; i < m_scene_manager.getScenes().size(); i++) {
-			if (ImGui::CollapsingHeader(m_scene_manager.getScenes()[i]->getName().c_str())) {
-			for (int j = 0; j < m_scene_manager.getScenes()[i]->getEntities().size(); j++) {
-			if (ImGui::Selectable(m_scene_manager.getScenes()[i]->getEntities()[j].name.c_str(), entitySelected == j)) {
-			entitySelected = j;
-			sceneSelected = i;
-			}
-			}
-			}
-			}*/
 		}
 
 		ImGui::End();

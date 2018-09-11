@@ -34,15 +34,17 @@ public:
 
 	void setName(std::string name) { m_name = name; }
 
-	std::string getName() { return m_name; }
+	std::string getName() const { return m_name; }
 
-	b2World* getWorld() { return m_world; }
+	b2World* getWorld() const { return m_world; }
 
 	std::vector<Entity>& getEntities() { return m_entities; }
 
-	ComponentStore<Sprite> getSprites() { return m_sprites; }
+	ComponentStore<Sprite> getSprites() const { return m_sprites; }
 
-	ComponentStore<BoxPhysics> getBoxPhysics() { return m_box_physique; }
+	ComponentStore<BoxPhysics> getBoxPhysics() const { return m_box_physique; }
+
+	ComponentStore<Input> getInputs() const { return m_inputs; }
 
 	~Scene();
 private:

@@ -25,10 +25,10 @@ GLFWEnvironment::GLFWEnvironment(const std::string &title, unsigned width, unsig
 	m_width = width;
 	m_height = height;
 	m_fullscreen = fullscreen;
-	ViewportRect = { 0, 0, width, height };
+	m_viewport_rect = { 0, 0, width, height };
 }
 
-std::vector<InputEnum> GLFWEnvironment::process_input() {
+std::vector<InputEnum> GLFWEnvironment::process_input() const{
 	std::vector<InputEnum> inputs;
 	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(m_window, true);
@@ -70,6 +70,7 @@ int GLFWEnvironment::init() {
 		const GLFWvidmode* resolution = this->get_resolution();
 		m_width = resolution->width;
 		m_height = resolution->height;
+		m_viewport_rect = { 0, 0, m_width, m_height };
 	}
 
 #if __APPLE__
@@ -102,11 +103,11 @@ int GLFWEnvironment::init() {
 }
 
 void GLFWEnvironment::update_viewport(int x, int y, int width, int height) {
-	ViewportRect.x = x;
-	ViewportRect.y = y;
-	ViewportRect.w = width;
-	ViewportRect.h = height;
-	glViewport(ViewportRect.x, ViewportRect.y, ViewportRect.w, ViewportRect.h);
+	m_viewport_rect.x = x;
+	m_viewport_rect.y = y;
+	m_viewport_rect.w = width;
+	m_viewport_rect.h = height;
+	glViewport(m_viewport_rect.x, m_viewport_rect.y, m_viewport_rect.w, m_viewport_rect.h);
 }
 
 int GLFWEnvironment::quit() {
@@ -121,11 +122,11 @@ std::string &GLFWEnvironment::get_title() {
 	return m_title;
 }
 
-unsigned GLFWEnvironment::get_width() {
+unsigned int GLFWEnvironment::get_width() const {
 	return m_width;
 }
 
-unsigned GLFWEnvironment::get_height() {
+unsigned int GLFWEnvironment::get_height() const {
 	return m_height;
 }
 

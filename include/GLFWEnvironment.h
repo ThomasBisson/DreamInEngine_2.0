@@ -50,7 +50,7 @@ public:
 	GLFWEnvironment(const std::string &title, unsigned width, unsigned height, bool fullscreen = false);
 
 	// TODO: move this apart cause it might not be its responsibilty (to manage inputs)
-	std::vector<InputEnum> process_input();
+	std::vector<InputEnum> process_input() const;
 
 	int init();
 
@@ -66,9 +66,9 @@ public:
 
 	std::string &get_title();
 
-	unsigned get_width();
+	unsigned int get_width() const;
 
-	unsigned get_height();
+	unsigned int get_height() const;
 
 	bool is_fullscreen();
 
@@ -76,13 +76,13 @@ public:
 
 	const GLFWvidmode* get_resolution() const;
 
-	ViewportRect ViewportRect;
 private:
 	GLFWwindow * m_window;
 	std::string m_title;
 	unsigned m_width;
 	unsigned m_height;
 	bool m_fullscreen = true;
+	ViewportRect m_viewport_rect;
 };
 
 #endif //DREAMINENGINE_GLFWENVIRONMENT_H

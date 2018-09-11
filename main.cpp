@@ -27,19 +27,18 @@ int main() {
 
 	SceneManager *sm = new SceneManager(m_glfw_environment);
 
-	/* Create one Scene in the Scene Manager */
+	// Create a new Scene and add it to the Scene Manager
 	sm->createScene("Aloha");
 
-	// Select a scene to be active
+	// Select a scene to be marked as active
 	sm->selectScene("Aloha");
 
 	/* Get the Scene Manager's first scene */
-	sm->getScene("Aloha")->getEntities().emplace_back(Entity("container_entity", 0));
-	sm->getScene("Aloha")->getEntities().emplace_back(Entity("face_entity", 1));
-	sm->getScene("Aloha")->getEntities().emplace_back(Entity("pokeball_entity", 2));
-	std::cout << sm->getScene("Aloha")->getEntities()[0].name << std::endl;
+	sm->getActualScene().getEntities().emplace_back(Entity("container_entity", 0));
+	sm->getActualScene().getEntities().emplace_back(Entity("face_entity", 1));
+	sm->getActualScene().getEntities().emplace_back(Entity("pokeball_entity", 2));
 
 	sm->start();
-	
+
 	return 0;
 }
