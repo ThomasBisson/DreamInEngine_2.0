@@ -8,6 +8,9 @@
 #include <iostream>
 #include <glm/detail/type_vec2.hpp>
 
+#include "utils/InputEnum.h"
+#include <vector>
+
 struct GLFWwindow;
 
 struct GLFWvidmode;
@@ -39,7 +42,7 @@ public:
 	GLFWEnvironment(const std::string &title, unsigned width, unsigned height, bool fullscreen = false);
 
 	// TODO: move this apart cause it might not be its responsibilty (to manage inputs)
-	void process_input();
+	std::vector<InputEnum> process_input();
 
 	int init();
 

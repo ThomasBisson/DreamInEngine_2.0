@@ -1,9 +1,5 @@
-﻿  imgui.cpp
-  main.cpp
-  ResourceManager.cpp
-  Texture.cpp
-  SceneManager.cpp
-c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(195): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
-c:\users\spark\desktop\apps\cppprojects\dreaminengine_2.0\src\scenes\scenemanager.cpp(194): warning C4244: 'argument' : conversion de 'float' en 'int', perte possible de données
+﻿  GLFWEnvironment.cpp
+  fps.cpp
   Génération de code en cours...
-  DreamInEngine.vcxproj -> C:\Users\Spark\Desktop\apps\cppprojects\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe
+c:\users\asus pc\documents\github\dreaminengine_2.0\src\glfwenvironment.cpp(83): warning C4715: 'GLFWEnvironment::init' : les chemins de contrôle ne retournent pas tous une valeur
+  DreamInEngine.vcxproj -> C:\Users\asus pc\Documents\GitHub\DreamInEngine_2.0\bin\x86\debug\DreamInEngine.exe

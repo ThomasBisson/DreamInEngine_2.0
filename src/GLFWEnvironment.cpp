@@ -13,7 +13,7 @@ void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
 
 GLFWEnvironment::GLFWEnvironment(bool fullscreen, const std::string &title) {
 	m_window = nullptr;
-	m_title = "Sugar World";
+	m_title = "DreamIn Engine";
 	m_width = 0; // defined later
 	m_height = 0; // idem (in init())
 	m_fullscreen = fullscreen;
@@ -27,13 +27,15 @@ GLFWEnvironment::GLFWEnvironment(const std::string &title, unsigned width, unsig
 	m_fullscreen = fullscreen;
 }
 
-void GLFWEnvironment::process_input() {
+std::vector<InputEnum> GLFWEnvironment::process_input() {
+	std::vector<InputEnum> inputs;
 	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(m_window, true);
-		std::cout << "SPACE !!" << std::endl;
 	}
-	else if (glfwGetKey(m_window, GLFW_KEY_H) == GLFW_PRESS) {
+	else if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		inputs.push_back(SPACE);
 	}
+	return inputs;
 }
 
 int GLFWEnvironment::init() {

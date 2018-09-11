@@ -12,7 +12,7 @@ m_sprites(), m_box_physique(), m_entities() {
 	m_world = new b2World(b2Vec2(0.0, 9.81));
 }
 
-void Scene::update() {
+void Scene::update(std::vector<InputEnum> inputs) {
 	m_box_physics_system.update(m_box_physique, m_sprites);
 	m_world->Step(1.0 / 30.0, 8, 3);
 }

@@ -203,6 +203,9 @@
     <ClCompile Include="src\utils\fps.cpp">
       <Filter>src\utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\systems\InputSystem.cpp">
+      <Filter>src\systems</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="libs\imgui-1.64\include\ImGui\imconfig.h">
@@ -425,6 +428,12 @@
       <Filter>src\components</Filter>
     </ClInclude>
     <ClInclude Include="include\utils\fps.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="include\systems\InputSystem.h">
+      <Filter>src\systems</Filter>
+    </ClInclude>
+    <ClInclude Include="include\utils\InputEnum.h">
       <Filter>src\utils</Filter>
     </ClInclude>
   </ItemGroup>

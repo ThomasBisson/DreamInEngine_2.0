@@ -67,7 +67,7 @@ void SceneManager::run() {
 
 		glfwPollEvents();
 
-		m_glfw_environment->process_input(); // Order ??
+		std::vector<InputEnum> inputs = m_glfw_environment->process_input(); // Order ??
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
