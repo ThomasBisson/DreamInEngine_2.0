@@ -35,6 +35,17 @@ typedef enum
 	PROJECTION_CENTER_CENTER = 2, // No projection
 } ProjectionType;
 
+typedef enum : unsigned int
+{
+	NONE = 0,
+	SPRITE = 1 << 0,
+	BOX2D = 1 << 1,
+	INPUT = 1 << 2,
+	HIT = 1 << 3,
+	OTHER = 1 << 4,
+	COMPONENT_TOTAL = 1 << 5,
+} ComponentType;
+
 class SceneManager {
 
 private:
@@ -108,8 +119,8 @@ public:
 	std::unordered_map<std::string, unsigned int> getIndexScene() const;
 
 	/* New Sprite
-	 * Adds a New Sprite to a specific scene */
-	void new_sprite(std::string sceneName, Entity entity, Texture texture, glm::vec2 position = glm::vec2(50.f, 50.f));
+	 * Adds a New Sprite to a specific scene */ // TODO: change this fucking default value
+	void new_sprite(unsigned int entity_id, Texture texture = ResourceManager::GetTexture("container"), glm::vec2 position = glm::vec2(50.0f, 50.0f));
 
 	/* Update Sprite
 	 * Updates a specific sprites thanks to OpenGL
@@ -123,6 +134,11 @@ public:
 
 	// @NOTE: For Real-Time Game modification
 	void addBox2D(std::string sceneName, Entity entity, Sprite *s, bool dynamicBody);
+
+	bool add_component(ComponentType component_type, unsigned int entity_id);
+
+	// TODO: get components for 1 entity
+	std::vector<unsigned int> get_components(unsigned int entity_id);
 
 	~SceneManager();
 };

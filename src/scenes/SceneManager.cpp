@@ -17,7 +17,6 @@
 #define IDENTITY_MATRICE 1.0f
 
 SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
-
 	m_glfw_environment = glfw_environment;
 	m_ImGui_HUD = new ImGuiHUD(*this, glfw_environment, true);
 	m_ImGui_HUD->init();
@@ -48,6 +47,10 @@ bool SceneManager::init() {
 	bool success = true;
 
 	// @TODO: Do initialization stuff here !
+	this->add_component(INPUT, 0);
+	this->add_component(SPRITE, 0);
+
+	this->get_components(0); // entity 0's component mask
 
 	return success;
 }
@@ -180,11 +183,11 @@ Scene& SceneManager::getActualScene() const {
 
 std::unordered_map<std::string, unsigned int> SceneManager::getIndexScene() const { return m_index_scene; }
 
-void SceneManager::new_sprite(std::string sceneName, Entity entity, Texture texture, glm::vec2 position) {
+void SceneManager::new_sprite(unsigned int entity_id, Texture texture, glm::vec2 position) {
 	Sprite *sprite = new Sprite(texture, position);
 
 	/* Add newly created Sprite object to the specified Scene */
-	getScene(sceneName)->add_sprite(entity, sprite);
+	this->getActualScene().add_sprite(entity_id, sprite);
 
 	//delete sprite;
 	//sprite = nullptr;
@@ -203,6 +206,62 @@ void SceneManager::render_sprite(Sprite *sprite) {
 void SceneManager::addBox2D(std::string sceneName, Entity entity, Sprite *sprite, bool dynamicBody) {
 	m_scenes[m_index_scene[sceneName]]->add_box_physics(entity, sprite->Position.x, sprite->Position.y,
 		sprite->Size.x, sprite->Size.y, dynamicBody);
+}
+
+bool SceneManager::add_component(ComponentType component_type, unsigned int entity_id)
+{
+	// TODO: check if entity_id is valid (in getEntities() range);
+	if(entity_id >= this->getActualScene().getEntities().size())
+	{
+		return false;
+	}
+
+	this->getActualScene().getEntities()[entity_id].mask |= component_type;
+
+	if(component_type == SPRITE)
+	{
+		this->new_sprite(entity_id);
+
+		if (component_type == BOX2D) // Can only have physics if the entity has a Sprite
+		{
+			//this->getActualScene().getBoxPhysics().add(new BoxPhysics(), entity_id);
+		}
+		if (component_type == INPUT)
+		{
+			
+		}
+	}
+	// TODO: not good !
+	else
+	{
+		std::cout << "[Warning] Could not add Component to the entity: type not implemented, yet";
+		return false;
+	}
+
+	return true;
+}
+
+std::vector<unsigned int> SceneManager::get_components(unsigned int entity_id)
+{
+	std::vector<unsigned int> entity_component_masks;
+
+	auto &actualScene = this->getActualScene();
+
+	// Fake entity component mask
+
+	unsigned int entityMask = this->getActualScene().getEntities()[entity_id].mask;
+	unsigned int component_type = 1;
+
+	for(int i = 0; component_type<<i < COMPONENT_TOTAL; ++i)
+	{
+		unsigned int component_mask = component_type << i;
+		if ((entityMask & component_mask) == component_mask)
+		{
+			entity_component_masks.emplace_back(component_mask);
+		}
+	}
+
+	return entity_component_masks;
 }
 
 //@TODO: see if memory leak is fixed => Do Tests

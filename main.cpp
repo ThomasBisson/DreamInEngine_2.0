@@ -39,9 +39,9 @@ int main() {
 	sm->getScene("Aloha")->getEntities().emplace_back(Entity("pokeball_entity", 2));
 	std::cout << sm->getScene("Aloha")->getEntities()[0].name << std::endl;
 
-	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[0], ResourceManager::GetTexture("container"), glm::vec2(50.0f, 50.0f));
-	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[1], ResourceManager::GetTexture("face"), glm::vec2(50.0f, 300.0f));
-	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[2], ResourceManager::GetTexture("pokeball"), glm::vec2(50.0f, 500.0f));
+	//sm->new_sprite(sm->getActualScene().getEntities()[0].id, ResourceManager::GetTexture("container"), glm::vec2(50.0f, 50.0f));
+	sm->new_sprite(sm->getActualScene().getEntities()[1].id, ResourceManager::GetTexture("face"), glm::vec2(50.0f, 300.0f));
+	sm->new_sprite(sm->getActualScene().getEntities()[2].id, ResourceManager::GetTexture("pokeball"), glm::vec2(50.0f, 500.0f));
 
 	// sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id)->Position += 400.0f;
 

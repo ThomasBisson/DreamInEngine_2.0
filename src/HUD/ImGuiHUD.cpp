@@ -262,27 +262,6 @@ void ImGuiHUD::update() {
 
 				ImGui::Spacing();
 
-				if (ImGui::TreeNode("Velocity"))
-				{
-					ImGui::BeginGroup();
-					// First line
-					ImGui::Text("X");
-					ImGui::SameLine();
-					if (ImGui::InputFloat(" velocity.x", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Velocity.x), 0.10f, 0, "%.3f")) // Text changed !
-					{
-					}
-					// Second line
-					ImGui::Text("Y");
-					ImGui::SameLine();
-					if (ImGui::InputFloat(" velocity.y", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Velocity.y), 0.10f, 0, "%.3f")) // Text changed !
-					{
-					}
-					ImGui::EndGroup();
-					ImGui::TreePop();
-				}
-
-				ImGui::Spacing();
-
 				if (ImGui::TreeNode("Rotation"))
 				{
 					ImGui::BeginGroup();

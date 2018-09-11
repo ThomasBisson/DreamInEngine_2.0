@@ -10,6 +10,8 @@
 struct Entity {
 	std::string name;
 	unsigned int id;
+	
+	unsigned int mask = 0; // Entity bit component mask
 
 	Entity(std::string _name, unsigned int _id) : name(_name), id(_id) {}
 };

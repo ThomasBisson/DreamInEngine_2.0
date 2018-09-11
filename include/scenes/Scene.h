@@ -24,7 +24,7 @@ public:
 
 	void render();
 
-	void add_sprite(Entity entity, Sprite* sprite);
+	void add_sprite(unsigned int entity_id, Sprite* sprite);
 
 	void add_box_physics(Entity entity, int x, int y, int w, int h, bool dyn);
 
@@ -37,6 +37,8 @@ public:
 	std::vector<Entity>& getEntities() { return m_entities; }
 
 	ComponentStore<Sprite> getSprites() { return m_sprites; }
+
+	ComponentStore<BoxPhysics> getBoxPhysics() { return m_box_physique; }
 
 	~Scene();
 private:

@@ -35,8 +35,8 @@ Scene::~Scene() {
 	delete m_sceneManager;
 }
 
-void Scene::add_sprite(Entity entity, Sprite *sprite) {
-	m_sprites.add(sprite, entity.id);
+void Scene::add_sprite(unsigned int entity_id, Sprite *sprite) {
+	m_sprites.add(sprite, entity_id);
 }
 
 void Scene::add_box_physics(Entity entity, int x, int y, int w, int h, bool dyn) {
