@@ -94,6 +94,8 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)libs\Box2D;$(SolutionDir)libs\imgui-1.64\include;$(SolutionDir)libs\soil.1.16.0\include;$(SolutionDir)libs\irrKlang-1.6.0-x86\irrKlang-1.6.0\include;$(SolutionDir)libs\glew-2.1.0-x86\include;$(SolutionDir)libs\glm-0.9.9.0;$(SolutionDir)libs\glfw-3.2.1-x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)libs\soil.1.16.0\lib\x86\Debug;$(SolutionDir)libs\irrKlang-1.6.0-x86\irrKlang-1.6.0\lib\x86_vs;$(SolutionDir)libs\glfw-3.2.1-x86\lib-vc2015;$(SolutionDir)libs\glew-2.1.0-x86\lib\x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -117,6 +119,8 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)include;$(SolutionDir)libs\Box2D;$(SolutionDir)libs\imgui-1.64\include;$(SolutionDir)libs\soil.1.16.0\include;$(SolutionDir)libs\irrKlang-1.6.0-x86\irrKlang-1.6.0\include;$(SolutionDir)libs\glew-2.1.0-x86\include;$(SolutionDir)libs\glm-0.9.9.0;$(SolutionDir)libs\glfw-3.2.1-x86\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

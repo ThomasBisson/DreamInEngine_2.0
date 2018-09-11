@@ -10,8 +10,6 @@
 #include <components/BoxPhysics.h>
 #include "Box2D/Box2D.h"
 
-#include <iostream>
-
 class BoxPhysicsSystem {
 public:
 	void update(ComponentStore<BoxPhysics> boxs, ComponentStore<Sprite> sprites) {
@@ -22,6 +20,8 @@ public:
 				Sprite* sprite = sprites.get(itSprite->first);
 				BoxPhysics* box = boxs.get(itSprite->first);
 
+				// TODO: PB, solve the conflict between this update and external "sprite Position updates" (e.g. ImGui graphical position modification);
+				// NOTE: the PB is that Box2D reset the sprite's position to its current Body => No sprite position update possible out of this class
 				sprite->Position.x = (float) box->getBody()->GetPosition().x;
 				sprite->Position.y = (float) box->getBody()->GetPosition().y;
 			}

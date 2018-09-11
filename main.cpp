@@ -10,7 +10,7 @@
 
 int main() {
 	//GLFWEnvironment* m_glfw_environment = new GLFWEnvironment("DreamIn Engine", 1920, 1080, GL_FALSE);
-	GLFWEnvironment* m_glfw_environment = new GLFWEnvironment(false);
+	GLFWEnvironment* m_glfw_environment = new GLFWEnvironment(true);
 	m_glfw_environment->init();
 
 	glewExperimental = GL_TRUE;
@@ -43,10 +43,12 @@ int main() {
 	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[1], ResourceManager::GetTexture("face"), glm::vec2(50.0f, 300.0f));
 	sm->new_sprite("Aloha", sm->getScene("Aloha")->getEntities()[2], ResourceManager::GetTexture("pokeball"), glm::vec2(50.0f, 500.0f));
 
-	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id), true);
-	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[1], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[1].id), true);
-	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[2],sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[2].id), false);
+	// sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id)->Position += 400.0f;
 
+	// [CRITICAL] TODO: solve the case where a component (ex: Sprite) can't be updated (Position/Rotation/etc..) while having an attached Box2D collider
+	/*sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id), true);
+	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[1], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[1].id), true);
+	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[2],sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[2].id), false);*/
 	sm->start();
 	
 	return 0;

@@ -9,7 +9,13 @@ class GLFWEnvironment;
 
 class SceneManager;
 
-struct ImVec4;
+typedef struct
+{
+	int x;
+	int y;
+	int w;
+	int h;
+} ImGuiWindowRect;
 
 class ImGuiHUD {
 public:
@@ -32,16 +38,21 @@ public:
 
     void showMyExampleMenuFile();
 
+	void UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect);
+
+	ImGuiWindowRect m_window_menubar;
+	ImGuiWindowRect m_window_scene;
+	ImGuiWindowRect m_window_entity;
 private:
     SceneManager &m_scene_manager;
     GLFWEnvironment *m_glfw_environment;
     bool m_install_callbacks;
     bool m_show_demo_window;
     bool m_show_another_window;
-    ImVec4 *m_clear_color;
-    bool m_show_menubar;
+
+    bool m_show_window_menubar;
     bool m_show_window_scene;
-    bool m_show_window_entity;
+	bool m_show_window_entity;
 };
 
 

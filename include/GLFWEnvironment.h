@@ -15,6 +15,14 @@ struct GLFWwindow;
 
 struct GLFWvidmode;
 
+typedef struct
+{
+	int x;
+	int y;
+	unsigned int w;
+	unsigned h;
+} ViewportRect;
+
 // Include Windows
 #ifdef WIN32
 
@@ -46,7 +54,7 @@ public:
 
 	int init();
 
-	void update_viewport();
+	void update_viewport(int x, int y, int width, int height);
 
 	void clear_screen(float r, float g, float b, float a);
 
@@ -67,6 +75,8 @@ public:
 	void set_fullscreen(bool fullscreen);
 
 	const GLFWvidmode* get_resolution() const;
+
+	ViewportRect ViewportRect;
 private:
 	GLFWwindow * m_window;
 	std::string m_title;
