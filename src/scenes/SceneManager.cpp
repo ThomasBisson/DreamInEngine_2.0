@@ -26,6 +26,8 @@ SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
 	m_scenes = std::vector<Scene *>(0);
 	m_index_scene = std::unordered_map<std::string, unsigned int>();
 
+	m_runningConfigEnum = CONFIG;
+
 	// TODO: Init projection mat4 ARRAY on the gpu side ! and call rendering to the good projection thanks to the enum id
 	// TODO: also see how to do a GLSL array (especially for mat4 arrays)
 	// Configure shaders
@@ -81,9 +83,9 @@ void SceneManager::run() {
 		
 		// [IMPORTANT WARNING]: Viewport & Scissor have their ORIGIN (0;0) to LOWER LEFT ! 
 		int x = m_ImGui_HUD->m_window_scene.w + m_ImGui_HUD->m_window_scene.x /* This last one is for responsive design ! */;
-		int y = 400; // 400 <=> window explorer's height
+		int y = m_glfw_environment->get_height()/7; // 400 <=> window explorer's height
 		unsigned int width = m_ImGui_HUD->m_window_entity.x - x; // NOTE: Not very reliable..
-		unsigned int height = 1080 - 400 - m_ImGui_HUD->m_window_menubar.h; // 400 <=> window explorer's height
+		unsigned int height = m_glfw_environment->get_height() - m_glfw_environment->get_height() / 4 - m_ImGui_HUD->m_window_menubar.h; // 400 <=> window explorer's height
 
 		/* (Re)Define the zone where OpenGL can Draw/Render things */
 		glEnable(GL_SCISSOR_TEST);
@@ -99,7 +101,9 @@ void SceneManager::run() {
 
 		if (m_actualScene) // Selected scene
 		{
-			m_actualScene->update(std::vector<InputEnum>());
+			if (RUNNING == m_runningConfigEnum) {
+				m_actualScene->update(inputs);
+			}
 
 			// TODO: Test MultiRendering from different views/(<=>viewports)/perspectives
 			m_actualScene->render();
@@ -203,11 +207,13 @@ void SceneManager::render_sprite(Sprite *sprite) {
 }
 
 // TODO: move to another location
-void SceneManager::addBox2D(std::string sceneName, Entity entity, Sprite *sprite, bool dynamicBody) {
-	m_scenes[m_index_scene[sceneName]]->add_box_physics(entity, sprite->Position.x, sprite->Position.y,
+void SceneManager::addBox2D(/*std::string sceneName, */Entity entity, Sprite *sprite, bool dynamicBody) {
+	/*m_scenes[m_index_scene[sceneName]]*/m_actualScene->add_box_physics(entity, sprite->Position.x, sprite->Position.y,
 		sprite->Size.x, sprite->Size.y, dynamicBody);
 }
 
+void SceneManager::addInput(/*std::string sceneName, */Entity entity) {
+	/*m_scenes[m_index_scene[sceneName]]*/m_actualScene->add_input(entity);
 bool SceneManager::add_component(ComponentType component_type, unsigned int entity_id)
 {
 	// TODO: check if entity_id is valid (in getEntities() range);

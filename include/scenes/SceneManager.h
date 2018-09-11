@@ -22,6 +22,9 @@
 #include <scenes/Scene.h>
 #include <SpriteRenderer.h>
 
+#include <utils/RunningConfigEnum.h>
+
+
 class ImGuiHUD;
 
 class SpriteRenderer;
@@ -59,6 +62,8 @@ private:
 	std::unordered_map<std::string, unsigned int> m_index_scene;
 
 	SpriteRenderer *spriteRenderer;
+
+	RunningConfigEnum m_runningConfigEnum;
 public:
 
 	SceneManager(GLFWEnvironment *glfw_environment);
@@ -133,7 +138,12 @@ public:
 	void render_sprite(Sprite *sprite);
 
 	// @NOTE: For Real-Time Game modification
-	void addBox2D(std::string sceneName, Entity entity, Sprite *s, bool dynamicBody);
+	void addBox2D(Entity entity, Sprite *s, bool dynamicBody);
+
+	void addInput(Entity entity);
+
+	void setRunningConfigEnum(RunningConfigEnum rce) { m_runningConfigEnum = rce; }
+	RunningConfigEnum getRunningConfigEnum() { return m_runningConfigEnum; }
 
 	bool add_component(ComponentType component_type, unsigned int entity_id);
 

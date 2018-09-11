@@ -144,6 +144,12 @@ void ImGuiHUD::update() {
 			}
 			ImGui::EndMenuBar();
 		}
+		if (ImGui::Button("play")) {
+			if(m_scene_manager.getRunningConfigEnum() == CONFIG)
+				m_scene_manager.setRunningConfigEnum(RUNNING);
+			else
+				m_scene_manager.setRunningConfigEnum(CONFIG);
+		}
 
 		this->UpdateCurrentWindowRectData(&m_window_menubar);
 

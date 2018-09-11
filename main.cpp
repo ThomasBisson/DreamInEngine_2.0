@@ -46,9 +46,12 @@ int main() {
 	// sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id)->Position += 400.0f;
 
 	// [CRITICAL] TODO: solve the case where a component (ex: Sprite) can't be updated (Position/Rotation/etc..) while having an attached Box2D collider
-	/*sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id), true);
-	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[1], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[1].id), true);
-	sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[2],sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[2].id), false);*/
+	sm->addBox2D(/*"Aloha", */sm->getScene("Aloha")->getEntities()[0], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[0].id), true);
+	//sm->addBox2D("Aloha", sm->getScene("Aloha")->getEntities()[1], sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[1].id), true);
+	sm->addBox2D(/*"Aloha", */sm->getScene("Aloha")->getEntities()[2],sm->getScene("Aloha")->getSprites().get(sm->getScene("Aloha")->getEntities()[2].id), false);
+
+	sm->addInput(/*"Aloha", */sm->getScene("Aloha")->getEntities()[1]);
+
 	sm->start();
 	
 	return 0;

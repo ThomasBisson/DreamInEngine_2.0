@@ -11,7 +11,9 @@
 #include <entities/Entity.h>
 #include <utils/ComponentStore.h>
 #include <systems/BoxPhysicsSystem.h>
+#include <systems/InputSystem.h>
 #include <components/Sprite.h>
+#include <components/Input.h>
 #include "utils/InputEnum.h"
 
 class SceneManager;
@@ -27,6 +29,8 @@ public:
 	void add_sprite(unsigned int entity_id, Sprite* sprite);
 
 	void add_box_physics(Entity entity, int x, int y, int w, int h, bool dyn);
+
+	void add_input(Entity entity);
 
 	void setName(std::string name) { m_name = name; }
 
@@ -49,14 +53,15 @@ private:
 	// Box2D
 	b2World* m_world;
 	BoxPhysicsSystem m_box_physics_system;
+	InputSystem m_input_system;
 
 	// Scene entities
 	std::vector<Entity> m_entities;
-	//std::unordered_map<unsigned int, unsigned int> m_box_physics_map;
-	//std::vector<BoxPhysics*> m_box_physics_vector;
+
+	// Scene components
 	ComponentStore<BoxPhysics> m_box_physique;
-	//std::vector<Sprite*> m_sprites;
 	ComponentStore<Sprite> m_sprites;
+	ComponentStore<Input> m_inputs;
 };
 
 #endif //DREAMINENGINE_SCENE_H
