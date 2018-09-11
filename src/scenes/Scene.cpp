@@ -7,18 +7,18 @@
 
 Scene::Scene(SceneManager *sceneManager, const std::string &sceneName) : m_sceneManager(sceneManager),
 m_name(sceneName),
-m_box_physics_system(),
-m_sprites(), m_box_physique(), m_entities() {
+m_box_physics_system(), m_input_system(),
+m_sprites(), m_box_physique(), m_inputs(), m_entities() {
 	m_world = new b2World(b2Vec2(0.0, 9.81));
 }
 
 void Scene::update(std::vector<InputEnum> inputs) {
 	m_box_physics_system.update(m_box_physique, m_sprites);
+	m_input_system.update(inputs, m_inputs, m_sprites);
 	m_world->Step(1.0 / 30.0, 8, 3);
 }
 
 void Scene::render() {
-	update(std::vector<InputEnum>());
 	for (auto &sprite : m_sprites.getVector()) {
 		m_sceneManager->update_sprite(sprite);
 		m_sceneManager->render_sprite(sprite);
@@ -43,5 +43,9 @@ void Scene::add_box_physics(Entity entity, int x, int y, int w, int h, bool dyn)
 	m_box_physique.add(new BoxPhysics(), entity.id);
 	m_box_physique.get(entity.id)->addRec(m_world, x, y, w, h, dyn);
 	m_world->SetContactListener(m_box_physique.get(entity.id));
+}
+
+void Scene::add_input(Entity entity) {
+	m_inputs.add(new Input(), entity.id);
 }
 

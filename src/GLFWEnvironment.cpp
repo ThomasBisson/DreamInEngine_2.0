@@ -36,6 +36,22 @@ std::vector<InputEnum> GLFWEnvironment::process_input() {
 	else if (glfwGetKey(m_window, GLFW_KEY_SPACE) == GLFW_PRESS) {
 		inputs.push_back(SPACE);
 	}
+	else if (glfwGetKey(m_window, GLFW_KEY_UP) == GLFW_PRESS) {
+		std::cout << "Z" << std::endl;
+		inputs.push_back(ARROW_UP);
+	}
+	else if (glfwGetKey(m_window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+		std::cout << "S" << std::endl;
+		inputs.push_back(ARROW_DOWN);
+	}
+	else if (glfwGetKey(m_window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+		std::cout << "D" << std::endl;
+		inputs.push_back(ARROW_RIGHT);
+	}
+	else if (glfwGetKey(m_window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+		std::cout << "Q" << std::endl;
+		inputs.push_back(ARROW_LEFT);
+	}
 	return inputs;
 }
 

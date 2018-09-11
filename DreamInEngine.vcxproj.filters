@@ -442,6 +442,9 @@
     <ClInclude Include="include\components\Input.h">
       <Filter>src\components</Filter>
     </ClInclude>
+    <ClInclude Include="include\utils\RunningConfigEnum.h">
+      <Filter>src\utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
