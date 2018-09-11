@@ -12,6 +12,7 @@
 #include <utils/ComponentStore.h>
 #include <systems/BoxPhysicsSystem.h>
 #include <components/Sprite.h>
+#include "utils/InputEnum.h"
 
 class SceneManager;
 
@@ -19,7 +20,7 @@ class Scene {
 public:
 	Scene(SceneManager *sceneManager, const std::string &sceneName);
 
-	void update();
+	void update(std::vector<InputEnum> inputs);
 
 	void render();
 

@@ -205,6 +205,7 @@
     <ClCompile Include="src\scenes\SceneManager.cpp" />
     <ClCompile Include="src\SpriteRenderer.cpp" />
     <ClCompile Include="src\systems\BoxPhysicsSystem.cpp" />
+    <ClCompile Include="src\systems\InputSystem.cpp" />
     <ClCompile Include="src\systems\PlayerControl.cpp" />
     <ClCompile Include="src\systems\System.cpp" />
     <ClCompile Include="src\utils\fps.cpp" />
@@ -223,12 +224,14 @@
     <ClInclude Include="include\scenes\SceneManager.h" />
     <ClInclude Include="include\SpriteRenderer.h" />
     <ClInclude Include="include\systems\BoxPhysicsSystem.h" />
+    <ClInclude Include="include\systems\InputSystem.h" />
     <ClInclude Include="include\systems\PlayerControl.h" />
     <ClInclude Include="include\systems\System.h" />
     <ClInclude Include="include\utils\Array.h" />
     <ClInclude Include="include\utils\Array2.h" />
     <ClInclude Include="include\utils\ComponentStore.h" />
     <ClInclude Include="include\utils\fps.h" />
+    <ClInclude Include="include\utils\InputEnum.h" />
     <ClInclude Include="libs\Box2D\Box2D\Box2D.h" />
     <ClInclude Include="libs\Box2D\Box2D\Collision\b2BroadPhase.h" />
     <ClInclude Include="libs\Box2D\Box2D\Collision\b2Collision.h" />
