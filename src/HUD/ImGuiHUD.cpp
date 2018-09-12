@@ -480,10 +480,11 @@ void ImGuiHUD::update() {
 			// 1. TODO: Display all loaded resources (textures, for the moment)
 				// Grid (selectable)
 					// Texture Image
-					// Text (under image, centered)
+					// Text (under image, centered)Some Tex
 
 			// 2. Clickable/Double-Clickable Texture&Text Button
 			const bool button_pressed = ImGui::Button(it.first.c_str(), ImVec2(64.0f, 64.0f));
+			ImGui::SameLine();
 
 			// 2. Make textures selectable if an entity is selected
 			if(entitySelected != -1 /* && sceneActive */)
