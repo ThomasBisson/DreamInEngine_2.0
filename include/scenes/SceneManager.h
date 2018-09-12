@@ -24,7 +24,7 @@
 
 #include <utils/RunningConfigEnum.h>
 
-
+bool has_component(unsigned int entity_mask, unsigned int component_mask);
 class ImGuiHUD;
 
 class SpriteRenderer;

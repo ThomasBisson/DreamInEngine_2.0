@@ -259,14 +259,13 @@ SceneManager::~SceneManager() {
 }
 
 ////////////////////////////// COMPONENTS MANAGEMENT //////////////////////////////////////////
-
+// TODO: Create special "Boolean type structure" to put as return type => Get an error message (pretty easily) in ImGui :D
+// Usage example (in ImGui): m_scene_manager->add_component(TEST, 0).message
 bool has_component(unsigned int entity_mask, unsigned int component_mask)
 {
 	return (entity_mask & component_mask) == component_mask;
 }
 
-// TODO: Create special "Boolean type structure" to put as return type => Get an error message (pretty easily) in ImGui :D
-// Usage example (in ImGui): m_scene_manager->add_component(TEST, 0).message
 BooleanCustom SceneManager::add_component(unsigned int component_type, unsigned int entity_id)
 {
 	// check if entity_id is valid (in entity list range)
