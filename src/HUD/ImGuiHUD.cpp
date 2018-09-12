@@ -138,7 +138,7 @@ int ImGuiHUD::init() {
 void ImGuiHUD::update() {
 	static int entitySelected = -1;
 	static int sceneSelected = -1;
-	
+
 	static unsigned int component_selected = SPRITE;
 	static bool show_listbox_components = false;
 
@@ -231,12 +231,12 @@ void ImGuiHUD::update() {
 
 			ImGui::Text("%s (id: %d, mask: %d)", entity.name.c_str(), entity.id, entity.mask);
 			ImGui::Spacing();
-			
+
 			// TODO: For the selected entity: Display all its components
 			// TODO: The displayed compoennts should be represented as Big Clickable Buttons 
-			for(unsigned int component_type : m_scene_manager.get_components(entity.id))
+			for (unsigned int component_type : m_scene_manager.get_components(entity.id))
 			{
-				if(ImGui::Button( (component_names_map[component_type]).c_str() )) // button pressed ?
+				if (ImGui::Button((component_names_map[component_type]).c_str())) // button pressed ?
 				{
 					component_selected = component_type;
 				}
@@ -260,7 +260,7 @@ void ImGuiHUD::update() {
 					listbox_items[item_id++] = (it.second).c_str(); // Name (component)
 				}
 
-				if(ImGui::ListBox("listbox\n(single select)", &listbox_item_current, listbox_items, IM_ARRAYSIZE(listbox_items), 4))
+				if (ImGui::ListBox("listbox\n(single select)", &listbox_item_current, listbox_items, IM_ARRAYSIZE(listbox_items), 4))
 				{
 					const std::string component_selected_name = listbox_items[listbox_item_current];
 					const unsigned int component_type = component_types_map[component_selected_name];
@@ -289,7 +289,7 @@ void ImGuiHUD::update() {
 		// TODO: Make a component info file (or Interface with Strategy pattern) to define what to do with each component !
 		if (entitySelected != -1 && sceneSelected != -1) // TOOD: only for test purpose ! Replace by better API calls
 		{
-			if(component_selected == SPRITE)
+			if (component_selected == SPRITE)
 			{
 				if (ImGui::TreeNode("Position"))
 				{
@@ -374,7 +374,7 @@ void ImGuiHUD::update() {
 				}
 			}
 
-			if(component_selected == INPUT)
+			if (component_selected == INPUT)
 			{
 				if (ImGui::TreeNode("Key Mapping"))
 				{
@@ -456,7 +456,7 @@ void ImGuiHUD::update() {
 		ImGui::End();
 	}
 
-	if(m_show_window_explorer)
+	if (m_show_window_explorer)
 	{
 		ImGuiWindowFlags my_window_explorer_flags = 0;
 		my_window_explorer_flags |= ImGuiWindowFlags_NoMove;
@@ -467,14 +467,42 @@ void ImGuiHUD::update() {
 		ImGui::Begin("Window Explorer", nullptr, my_window_explorer_flags);
 		ImGui::SetWindowSize(ImVec2((m_glfw_environment->get_width() - m_window_scene.w - m_window_entity.w), m_glfw_environment->get_height() * 0.3f));
 		ImGui::SetWindowPos(ImVec2(m_window_scene.w, (m_glfw_environment->get_height() * 0.7f))); // 0.8f stands for "glfw_height - (glfw_height * 0.2))" <=> "glfw_height * (1 - 0.2f)" <=> "glfw_height * 0.8f";
-		
-		// Content here !
+
+		ImGui::BeginGroup();
+		// 0. Get textures bank data
+		auto textures_bank = ResourceManager::GetTexturesBank();
+
+		for (auto& it : textures_bank)
+		{
+			const std::string texture_name = it.first; // name;
+			auto texture = it.second; // TODO: Load texture into ImGui
+
+			// 1. TODO: Display all loaded resources (textures, for the moment)
+				// Grid (selectable)
+					// Texture Image
+					// Text (under image, centered)
+
+			// 2. Clickable/Double-Clickable Texture&Text Button
+			const bool button_pressed = ImGui::Button(it.first.c_str(), ImVec2(64.0f, 64.0f));
+
+			// 2. Make textures selectable if an entity is selected
+			if(entitySelected != -1 /* && sceneActive */)
+			{
+				if (button_pressed)
+				{
+					// 2.2. Selected entity takes the selected Texture
+					m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Texture = ResourceManager::GetTexture(texture_name);
+				}
+			}
+		}
+
+		ImGui::EndGroup();
 
 		this->UpdateCurrentWindowRectData(&m_window_explorer);
 
 		ImGui::End();
 	}
-	
+
 	// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
 	if (m_show_demo_window) {
 		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
@@ -574,5 +602,3 @@ void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
 //	ImGui::EndPopup();
 //}
 //ImGui::SameLine(); ImGui::Text("(<-- right-click here)");
-
-// TODO: TextBox to modify

@@ -4,8 +4,7 @@
 
 #include "GLFWEnvironment.h"
 #include <GLEW/glew.h>
-
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 int window_position_x = 0; // from TOP LEFT of user's screen
 int window_position_y = 0; // from TOP LEFT of user's screen

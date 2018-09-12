@@ -6,7 +6,7 @@
 ** Creative Commons, either version 4 of the License, or (at your
 ** option) any later version.
 ******************************************************************/
-#include "../include/ResourceManager.h"
+#include <ResourceManager.h>
 
 #include <iostream>
 #include <sstream>
@@ -18,6 +18,15 @@
 std::map<std::string, Texture>    ResourceManager::Textures;
 std::map<std::string, Shader>       ResourceManager::Shaders;
 
+std::map<std::string, Texture> ResourceManager::GetTexturesBank()
+{
+	return Textures;
+}
+
+unsigned int ResourceManager::CountTextures()
+{
+	return Textures.size();
+}
 
 Shader ResourceManager::LoadShader(const GLchar *vShaderFile, const GLchar *fShaderFile, const GLchar *gShaderFile, std::string name)
 {

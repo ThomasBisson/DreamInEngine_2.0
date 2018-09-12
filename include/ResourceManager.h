@@ -14,8 +14,8 @@
 
 #include <GLEW/glew.h>
 
-#include "components/Shader.h"
-#include "components/Texture.h"
+#include <components/Shader.h>
+#include <components/Texture.h>
 
 // A static singleton ResourceManager class that hosts several
 // functions to load Textures and Shaders. Each loaded texture
@@ -38,6 +38,10 @@ public:
 	static Texture GetTexture(std::string name);
 	// Properly de-allocates all loaded resources
 	static void      Clear();
+	// Get all the Bank which contains all loaded Textures
+	static std::map<std::string, Texture> GetTexturesBank();
+	// Count the number of loaded textures
+	static unsigned int CountTextures();
 private:
 	// Private constructor, that is we do not want any actual resource manager objects. Its members and functions should be publicly available (static).
 	ResourceManager() { }
