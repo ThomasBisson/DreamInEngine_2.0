@@ -28,6 +28,7 @@ bool* v = new bool[1]{ false };
 //	"Input Component"
 //};
 std::unordered_map<unsigned int, std::string> component_names_map;
+std::unordered_map<std::string, unsigned int> component_types_map;
 #pragma endregion
 
 void ToggleButton(const char* str_id, bool* v)
@@ -128,12 +129,19 @@ int ImGuiHUD::init() {
 	component_names_map[SPRITE] = "Sprite Component";
 	component_names_map[INPUT] = "Input Component";
 	component_names_map[BOX2D] = "BoxPhysics Component";
+
+	component_types_map[component_names_map[SPRITE]] = SPRITE;
+	component_types_map[component_names_map[INPUT]] = INPUT;
+	component_types_map[component_names_map[BOX2D]] = BOX2D;
 }
 
 void ImGuiHUD::update() {
 	static int entitySelected = -1;
 	static int sceneSelected = -1;
+	
 	static unsigned int component_selected = SPRITE;
+	static bool show_listbox_components = false;
+
 	static bool queryComponentInfo = false; // TODO: See if it is really useful in the future
 	static BooleanCustom query_add_component = BooleanCustom();
 
@@ -216,8 +224,10 @@ void ImGuiHUD::update() {
 		if (entitySelected != -1 && sceneSelected != -1)
 		{
 			Entity entity = m_scene_manager.getActualScene().getEntities()[entitySelected];
+
 			ImGui::Text("%s (id: %d, mask: %d)", entity.name.c_str(), entity.id, entity.mask);
 			ImGui::Spacing();
+			
 			// TODO: For the selected entity: Display all its components
 			// TODO: The displayed compoennts should be represented as Big Clickable Buttons 
 			for(unsigned int component_type : m_scene_manager.get_components(entity.id))
@@ -227,23 +237,36 @@ void ImGuiHUD::update() {
 					component_selected = component_type;
 				}
 			}
-			//if (ImGui::Button("[TEST] Sprite Component"))
-			//{
-			//	// m_scene_manager.getActualScene()->getComponent(component_name, entity);
-			//	componentSelected = "sprite";
-			//	//entitySelected, already defined/selected
-			//	// sceneSelected, already defined/selected
-
-			//}
 
 			// NOTE: Always add one more "button" -> add a new component to the selected entity
 			if (ImGui::Button("ADD COMPONENT")) // TODO: Improve the design of the button (add a "+" in a "circle" shape centered in the button)
 			{
-				// TODO: Do a select box menu and take the result as a ComponentTypeStr and convert it to a ComponentType to invoke add_component(type,entity) method
-				query_add_component = m_scene_manager.add_component(INPUT, m_scene_manager.getActualScene().getEntities()[entitySelected].id);
-				if (!std::empty(query_add_component.Message))
+				show_listbox_components = true; // Trigger ListBox choices
+			}
+
+			if (show_listbox_components)
+			{
+				const char* listbox_items[3];
+				int item_id = 0;
+
+				for (auto& it : component_names_map)
 				{
-					queryComponentInfo = true;
+					listbox_items[item_id++] = (it.second).c_str(); // Name (component)
+				}
+
+				// TODO: assign the return for() loop map list of names
+				static int listbox_item_current = 0;
+				if(ImGui::ListBox("listbox\n(single select)", &listbox_item_current, listbox_items, IM_ARRAYSIZE(listbox_items), 4))
+				{
+					const std::string component_selected_name = listbox_items[listbox_item_current];
+					// TODO: ugly : map about component_type/component_name created only for this line..
+					const unsigned int component_type = component_types_map[component_selected_name];
+
+					query_add_component = m_scene_manager.add_component(component_type, m_scene_manager.getActualScene().getEntities()[entitySelected].id);
+					if (!std::empty(query_add_component.Message))
+					{
+						queryComponentInfo = true;
+					}
 				}
 			}
 

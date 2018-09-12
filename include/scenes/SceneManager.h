@@ -151,7 +151,7 @@ public:
 	void setRunningConfigEnum(RunningConfigEnum rce) { m_runningConfigEnum = rce; }
 	RunningConfigEnum getRunningConfigEnum() const { return m_runningConfigEnum; }
 
-	BooleanCustom add_component(ComponentType component_type, unsigned int entity_id);
+	BooleanCustom add_component(unsigned int component_type, unsigned int entity_id);
 
 	template<typename T>
 	T* get_component(ComponentType component_type, unsigned int entity_id);
