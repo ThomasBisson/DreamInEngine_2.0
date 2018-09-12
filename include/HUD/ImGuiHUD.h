@@ -19,45 +19,47 @@ typedef struct
 
 class ImGuiHUD {
 public:
-    ImGuiHUD(SceneManager &scene_manager, GLFWEnvironment *glfw_environment, bool install_callbacks);
+	ImGuiHUD(SceneManager &scene_manager, GLFWEnvironment *glfw_environment, bool install_callbacks);
 
-    /* Init
-     * Initialize ImGui Context for a given GLFW environment
-     * @return -1 if GLFW context is not initialized
-     * @return -1 if gl3w cannot be initialized
-     * */
-    int init();
+	/* Init
+	 * Initialize ImGui Context for a given GLFW environment
+	 * @return -1 if GLFW context is not initialized
+	 * @return -1 if gl3w cannot be initialized
+	 * */
+	int init();
 
-    // Configure ImGui window(s) EVERY FRAME
-    void update();
+	// Configure ImGui window(s) EVERY FRAME
+	void update();
 
-    // Render/Show the ImGui frame(s)
-    void render();
+	// Render/Show the ImGui frame(s)
+	void render();
 
-    void close();
+	void close();
 
-    void showMyExampleMenuFile();
+	void showMyExampleMenuFile();
 
 	void UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect);
 
+	// TODO: should be private
+	// Window rectangle (frame limits)
 	ImGuiWindowRect m_window_menubar;
 	ImGuiWindowRect m_window_scene;
 	ImGuiWindowRect m_window_entity;
+	ImGuiWindowRect m_window_explorer;
 private:
-    SceneManager &m_scene_manager;
-    GLFWEnvironment *m_glfw_environment;
-    bool m_install_callbacks;
+	SceneManager & m_scene_manager;
+	GLFWEnvironment *m_glfw_environment;
+	bool m_install_callbacks;
 
 	// Debug windows
-    bool m_show_demo_window;
-    bool m_show_another_window;
-    
+	bool m_show_demo_window;
+	bool m_show_another_window;
+
 	// DreamIn Engine main frames
 	bool m_show_window_menubar;
-    bool m_show_window_scene;
+	bool m_show_window_scene;
 	bool m_show_window_entity;
 	bool m_show_window_explorer;
 };
-
 
 #endif //DREAMINENGINE_IMGUIGLFWCONTEXT_H

@@ -66,15 +66,27 @@ public:
 
 	std::string &get_title();
 
-	unsigned int get_width() const;
+	int get_width(); // get FRAME width (without toolbar)
 
-	unsigned int get_height() const;
+	int get_height(); // get FRAME with (without toolbar)
 
 	bool is_fullscreen();
 
 	void set_fullscreen(bool fullscreen);
 
 	const GLFWvidmode* get_resolution() const;
+
+	int get_window_position_x();
+
+	int get_window_position_y();
+
+	int get_window_width();
+
+	int get_window_height();
+
+	bool is_window_focused();
+
+	bool is_window_iconified();
 
 private:
 	GLFWwindow * m_window;

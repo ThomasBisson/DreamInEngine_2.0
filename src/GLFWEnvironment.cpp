@@ -7,8 +7,45 @@
 
 #include <glfw/glfw3.h>
 
+int window_position_x = 0; // from TOP LEFT of user's screen
+int window_position_y = 0; // from TOP LEFT of user's screen
+int window_width = 0; // Window with tilebar
+int window_height = 0; // Window with tilebar
+
+int frame_width = 0; // Window without tilebar
+int frame_height = 0; // Window without tilebar
+int is_focused = GLFW_FALSE; // Window (with tilebar) focused
+int is_iconified = GLFW_FALSE; // Window iconified
+
 void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-	// glViewport(0, 0, width, height);
+	frame_width = width;
+	frame_height = height;
+}
+
+void window_focus_callback(GLFWwindow *window, int focused) {
+	is_focused = focused;
+}
+
+void window_iconify_callback(GLFWwindow* window, int iconified)
+{
+	is_iconified = iconified;
+}
+
+void window_pos_callback(GLFWwindow* window, int xPos, int yPos)
+{
+	window_position_x = xPos;
+	window_position_y = yPos;
+}
+
+void window_size_callback(GLFWwindow* window, int width, int height)
+{
+	window_width = width;
+	window_height = height;
+}
+
+void window_close_callback(GLFWwindow* window)
+{
+
 }
 
 GLFWEnvironment::GLFWEnvironment(bool fullscreen, const std::string &title) {
@@ -28,7 +65,7 @@ GLFWEnvironment::GLFWEnvironment(const std::string &title, unsigned width, unsig
 	m_viewport_rect = { 0, 0, width, height };
 }
 
-std::vector<InputEnum> GLFWEnvironment::process_input() const{
+std::vector<InputEnum> GLFWEnvironment::process_input() const {
 	std::vector<InputEnum> inputs;
 	if (glfwGetKey(m_window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(m_window, true);
@@ -58,13 +95,13 @@ std::vector<InputEnum> GLFWEnvironment::process_input() const{
 int GLFWEnvironment::init() {
 	glfwSetErrorCallback(error_callback);
 
-	if(!glfwInit())
+	if (!glfwInit())
 	{
 		std::cout << "Error: Could not initialize GLFW !" << std::endl;
 		return 1;
 	}
 
-	if(!m_width && !m_height) // Size undefined earlier
+	if (!m_width && !m_height) // Size undefined earlier
 	{
 		// Determine window size, based on screen resolution
 		const GLFWvidmode* resolution = this->get_resolution();
@@ -83,8 +120,11 @@ int GLFWEnvironment::init() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 #endif	
-	//glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+	glfwWindowHint(GLFW_DECORATED, GL_TRUE);
+	glfwWindowHint(GLFW_VISIBLE, GL_TRUE);
 
+	// NOTE: to display properly the window (with tilebar), 
 	m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), (m_fullscreen ? glfwGetPrimaryMonitor() : nullptr), nullptr);
 	if (m_window == 0) {
 		// Window or context creation failed
@@ -95,11 +135,24 @@ int GLFWEnvironment::init() {
 
 	glfwMakeContextCurrent(m_window);
 
-	/* Enables V-Sync */
+	// Enable Vsync
 	glfwSwapInterval(1);
 
-	/* register the callback functions after we've created the window and before the game loop is initiated */
-	glfwSetFramebufferSizeCallback(glfwGetCurrentContext(), framebuffer_size_callback);
+	// Register callback functions
+	glfwSetFramebufferSizeCallback(glfwGetCurrentContext(), framebuffer_size_callback); // frame size
+	glfwSetWindowFocusCallback(glfwGetCurrentContext(), window_focus_callback); // focus
+	glfwSetWindowIconifyCallback(glfwGetCurrentContext(), window_iconify_callback); // iconify
+	glfwSetWindowPosCallback(glfwGetCurrentContext(), window_size_callback); // window_size
+	glfwSetWindowSizeCallback(glfwGetCurrentContext(), window_size_callback); // window size
+	glfwSetWindowCloseCallback(glfwGetCurrentContext(), window_close_callback); // close
+
+	// Replace (non-maximized/non-fullscreen) window to TOP LEFT origin
+	int frame_top;
+	glfwGetWindowFrameSize(glfwGetCurrentContext(), nullptr, &frame_top, nullptr, nullptr);
+	glfwSetWindowPos(glfwGetCurrentContext(), 0, frame_top);
+
+	// Immediatly maximize window => fit the screen
+	glfwMaximizeWindow(glfwGetCurrentContext());
 }
 
 void GLFWEnvironment::update_viewport(int x, int y, int width, int height) {
@@ -111,7 +164,7 @@ void GLFWEnvironment::update_viewport(int x, int y, int width, int height) {
 }
 
 int GLFWEnvironment::quit() {
-	return glfwWindowShouldClose(get_window());
+	return glfwWindowShouldClose(glfwGetCurrentContext());
 }
 
 GLFWwindow *GLFWEnvironment::get_window() {
@@ -122,12 +175,13 @@ std::string &GLFWEnvironment::get_title() {
 	return m_title;
 }
 
-unsigned int GLFWEnvironment::get_width() const {
-	return m_width;
+int GLFWEnvironment::get_width() {
+	
+	return m_width = frame_width;
 }
 
-unsigned int GLFWEnvironment::get_height() const {
-	return m_height;
+int GLFWEnvironment::get_height() {
+	return m_height = frame_height;
 }
 
 void GLFWEnvironment::close() {
@@ -151,4 +205,34 @@ void GLFWEnvironment::set_fullscreen(bool fullscreen) {
 const GLFWvidmode* GLFWEnvironment::get_resolution() const
 {
 	return glfwGetVideoMode(glfwGetPrimaryMonitor());
+}
+
+int GLFWEnvironment::get_window_position_x()
+{
+	return window_position_x;
+}
+
+int GLFWEnvironment::get_window_position_y()
+{
+	return window_position_y;
+}
+
+int GLFWEnvironment::get_window_width()
+{
+	return window_width;
+}
+
+int GLFWEnvironment::get_window_height()
+{
+	return window_height;
+}
+
+bool GLFWEnvironment::is_window_focused()
+{
+	return is_focused;
+}
+
+bool GLFWEnvironment::is_window_iconified()
+{
+	return is_iconified;
 }

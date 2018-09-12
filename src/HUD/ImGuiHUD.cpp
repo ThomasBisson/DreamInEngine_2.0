@@ -153,10 +153,11 @@ void ImGuiHUD::update() {
 	{
 		//@TODO faire un menu qui ne prend pas de rectangle noir en dessous
 		ImGuiWindowFlags my_menubar_flags = 0;
-		my_menubar_flags += ImGuiWindowFlags_MenuBar;
-		my_menubar_flags += ImGuiWindowFlags_NoTitleBar;
-		my_menubar_flags += ImGuiWindowFlags_NoCollapse;
-		my_menubar_flags += ImGuiWindowFlags_NoMove;
+		my_menubar_flags |= ImGuiWindowFlags_MenuBar;
+		my_menubar_flags |= ImGuiWindowFlags_NoTitleBar;
+		my_menubar_flags |= ImGuiWindowFlags_NoCollapse;
+		my_menubar_flags |= ImGuiWindowFlags_NoMove;
+		my_menubar_flags |= ImGuiWindowFlags_NoResize;
 
 		ImGui::Begin("MenuBar", nullptr, my_menubar_flags);
 		ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
@@ -185,8 +186,10 @@ void ImGuiHUD::update() {
 	}
 
 	ImGuiWindowFlags my_window_scene_flags = 0;
-	my_window_scene_flags += ImGuiWindowFlags_NoMove;
-	my_window_scene_flags += ImGuiWindowFlags_NoCollapse;
+	my_window_scene_flags |= ImGuiWindowFlags_NoMove;
+	my_window_scene_flags |= ImGuiWindowFlags_NoCollapse;
+	my_window_scene_flags |= ImGuiWindowFlags_NoResize;
+	my_window_scene_flags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 	ImGui::Begin("Window scene", nullptr, my_window_scene_flags);
 	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height() - this->m_window_menubar.h));
@@ -209,12 +212,13 @@ void ImGuiHUD::update() {
 
 	ImGui::End();
 
-
 	if (m_show_window_entity)
 	{
 		ImGuiWindowFlags my_window_entity_flags = 0;
-		my_window_entity_flags = ImGuiWindowFlags_NoMove;
-		my_window_entity_flags += ImGuiWindowFlags_NoCollapse;
+		my_window_entity_flags |= ImGuiWindowFlags_NoMove;
+		my_window_entity_flags |= ImGuiWindowFlags_NoCollapse;
+		my_window_entity_flags |= ImGuiWindowFlags_NoResize;
+		my_window_entity_flags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 		ImGui::Begin("Window entity", nullptr, my_window_entity_flags);
 		ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height() - this->m_window_menubar.h));
@@ -247,19 +251,18 @@ void ImGuiHUD::update() {
 			if (show_listbox_components)
 			{
 				const char* listbox_items[3];
+				static int listbox_item_current = 0;
 				int item_id = 0;
 
+				// build listbox item list
 				for (auto& it : component_names_map)
 				{
 					listbox_items[item_id++] = (it.second).c_str(); // Name (component)
 				}
 
-				// TODO: assign the return for() loop map list of names
-				static int listbox_item_current = 0;
 				if(ImGui::ListBox("listbox\n(single select)", &listbox_item_current, listbox_items, IM_ARRAYSIZE(listbox_items), 4))
 				{
 					const std::string component_selected_name = listbox_items[listbox_item_current];
-					// TODO: ugly : map about component_type/component_name created only for this line..
 					const unsigned int component_type = component_types_map[component_selected_name];
 
 					query_add_component = m_scene_manager.add_component(component_type, m_scene_manager.getActualScene().getEntities()[entitySelected].id);
@@ -453,35 +456,25 @@ void ImGuiHUD::update() {
 		ImGui::End();
 	}
 
-	// 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
-	if (m_show_another_window) {
-		ImGui::Begin("Another (Debug/Test) Window", &m_show_another_window);
-		ImGui::SetWindowSize(ImVec2(800, 400));
-		ImGui::Text("Hello from another window!");
-		if (ImGui::Button("Close Me"))
-			m_show_another_window = false;
-		ImGui::BeginColumns("tests", 2, false);
-		ImGui::Button("Row 1 Col 1");
-		ImGui::Button("Row 2 Col 1");
-		ImGui::NextColumn();
-		ImGui::Button("Row 1 & 2 Col 2");
-		ImGui::Button("O");
-		if (ImGui::IsItemClicked()) // Refers to the LAST button !
-		{
-			ImGui::Text("FFFFF");
-		}
-		ImGui::EndColumns();
+	if(m_show_window_explorer)
+	{
+		ImGuiWindowFlags my_window_explorer_flags = 0;
+		my_window_explorer_flags |= ImGuiWindowFlags_NoMove;
+		my_window_explorer_flags |= ImGuiWindowFlags_NoCollapse;
+		my_window_explorer_flags |= ImGuiWindowFlags_NoResize;
+		my_window_explorer_flags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
-		if (ImGui::InputFloat("red", &value, 0.05f, 0, "%.3f")) // Text changed !
-		{
-			ImGui::Text("Focus (Edition): Text changed !");
-			ImGui::Text("Clicked with value : %.3f", value);
-			m_scene_manager.getScene("Aloha")->getEntities()[0], m_scene_manager.getScene("Aloha")->getSprites().get(m_scene_manager.getScene("Aloha")->getEntities()[0].id)->Position.x = value;
-		}
+		ImGui::Begin("Window Explorer", nullptr, my_window_explorer_flags);
+		ImGui::SetWindowSize(ImVec2((m_glfw_environment->get_width() - m_window_scene.w - m_window_entity.w), m_glfw_environment->get_height() * 0.3f));
+		ImGui::SetWindowPos(ImVec2(m_window_scene.w, (m_glfw_environment->get_height() * 0.7f))); // 0.8f stands for "glfw_height - (glfw_height * 0.2))" <=> "glfw_height * (1 - 0.2f)" <=> "glfw_height * 0.8f";
+		
+		// Content here !
+
+		this->UpdateCurrentWindowRectData(&m_window_explorer);
 
 		ImGui::End();
 	}
-
+	
 	// 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
 	if (m_show_demo_window) {
 		ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!

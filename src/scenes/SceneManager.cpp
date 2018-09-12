@@ -97,15 +97,16 @@ void SceneManager::run() const {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 
+		
+		
 		// TODO: Trigger a viewPort update => Update Scene(s) frame to fit the screen
 		// TODO: Create window explorer at the bottom of the screen
 		// TODO: Add window explorer to viewport's height calculation(s)
-
 		// [IMPORTANT WARNING]: Viewport & Scissor have their ORIGIN (0;0) to LOWER LEFT ! 
-		int x = m_ImGui_HUD->m_window_scene.w + m_ImGui_HUD->m_window_scene.x /* This last one is for responsive design ! */;
-		int y = m_glfw_environment->get_height() / 7; // 400 <=> window explorer's height
+		int x = m_ImGui_HUD->m_window_scene.w; // + (m_ImGui_HUD->m_window_scene.x); This one is for responsive design
+		int y = m_ImGui_HUD->m_window_explorer.h + (m_glfw_environment->get_height() * 0.030f); // optional, only to have square textures
 		unsigned int width = m_ImGui_HUD->m_window_entity.x - x; // NOTE: Not very reliable..
-		unsigned int height = m_glfw_environment->get_height() - m_glfw_environment->get_height() / 4 - m_ImGui_HUD->m_window_menubar.h; // 400 <=> window explorer's height
+		unsigned int height = (m_glfw_environment->get_height() - m_ImGui_HUD->m_window_explorer.h) - m_ImGui_HUD->m_window_menubar.h - (m_glfw_environment->get_height() * 0.060f); // *0.035f to have square textures
 
 		// NOTE: (Re)Define the zone where OpenGL can Draw/Render things
 		glEnable(GL_SCISSOR_TEST);
