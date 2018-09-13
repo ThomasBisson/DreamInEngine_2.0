@@ -53,18 +53,18 @@ bool SceneManager::init() {
 	bool success = true;
 
 	// Container (Entity ID: 0)
-	this->add_component(SPRITE, 0);
+	this->add_component(COMPONENT_SPRITE, 0);
 
 	// Face (Entity ID: 1)
-	this->add_component(SPRITE, 1);
-	this->get_component<Sprite>(SPRITE, 1)->Texture = ResourceManager::GetTexture("face");
-	this->get_component<Sprite>(SPRITE, 1)->Position = glm::vec2(50.0, 300.0f);
-	this->add_component(INPUT, 1);
+	this->add_component(COMPONENT_SPRITE, 1);
+	this->get_component<Sprite>(COMPONENT_SPRITE, 1)->Texture = ResourceManager::GetTexture("face");
+	this->get_component<Sprite>(COMPONENT_SPRITE, 1)->Position = glm::vec2(50.0, 300.0f);
+	this->add_component(COMPONENT_INPUT, 1);
 
 	// Pokeball (Entity ID: 2)
-	this->add_component(SPRITE, 2);
-	this->get_component<Sprite>(SPRITE, 2)->Texture = ResourceManager::GetTexture("pokeball");
-	this->get_component<Sprite>(SPRITE, 2)->Position = glm::vec2(50.0, 500.0f);
+	this->add_component(COMPONENT_SPRITE, 2);
+	this->get_component<Sprite>(COMPONENT_SPRITE, 2)->Texture = ResourceManager::GetTexture("pokeball");
+	this->get_component<Sprite>(COMPONENT_SPRITE, 2)->Position = glm::vec2(50.0, 500.0f);
 
 	//this->get_components(0); // entity 0's component mask
 
@@ -275,9 +275,9 @@ BooleanCustom SceneManager::add_component(unsigned int component_type, unsigned 
 	// Add component type to entity's mask
 	auto &entity_mask = this->getActualScene().getEntities()[entity_id].mask;
 
-	if (component_type == SPRITE)
+	if (component_type == COMPONENT_SPRITE)
 	{
-		if (has_component(entity_mask, SPRITE))
+		if (has_component(entity_mask, COMPONENT_SPRITE))
 		{
 			// Sprite component already attached to entity
 			return BooleanCustom(false, "Error: Could not add Sprite component.\nThis entity already have a Sprite component");
@@ -291,12 +291,12 @@ BooleanCustom SceneManager::add_component(unsigned int component_type, unsigned 
 	}
 
 	// TODO: Put Box2D parameters via the mask
-	if (component_type == BOX2D) // Can only have physics if the entity has a Sprite
+	if (component_type == COMPONENT_BOX2DPHYSICS) // Can only have physics if the entity has a Sprite
 	{
-		if (!has_component(entity_mask, SPRITE))
+		if (!has_component(entity_mask, COMPONENT_SPRITE))
 			return BooleanCustom(false, "Error: Could not add BoxPhysics component\nPlease add a Sprite component first !");
 
-		if (has_component(entity_mask, BOX2D))
+		if (has_component(entity_mask, COMPONENT_BOX2DPHYSICS))
 		{
 			// BoxPhysics component already attached to entity
 			return BooleanCustom(false, "Error: Could not add BoxPhysics component.\nThis entity already have a BoxPhysics component");
@@ -309,12 +309,12 @@ BooleanCustom SceneManager::add_component(unsigned int component_type, unsigned 
 			return BooleanCustom(true, "Successfully added BoxPhysics component");
 		}
 	}
-	if (component_type == INPUT)
+	if (component_type == COMPONENT_INPUT)
 	{
-		if (!has_component(entity_mask, SPRITE))
+		if (!has_component(entity_mask, COMPONENT_SPRITE))
 			return BooleanCustom(false, "Error: Could not add BoxPhysics component\nPlease add a Sprite component first !");
 
-		if (has_component(entity_mask, INPUT))
+		if (has_component(entity_mask, COMPONENT_INPUT))
 		{
 			// Input component already attached to entity
 			return BooleanCustom(false, "Error: Could not add Input component.\nThis entity already have an Input component");
@@ -360,17 +360,17 @@ T* SceneManager::get_component(ComponentType component_type, unsigned entity_id)
 {
 	const unsigned int entity_mask = this->getActualScene().getEntities()[entity_id].mask;
 
-	if (component_type == SPRITE)
+	if (component_type == COMPONENT_SPRITE)
 	{
-		if (has_component(entity_mask, SPRITE)) return (T*)this->getActualScene().getSprites().get(entity_id);
+		if (has_component(entity_mask, COMPONENT_SPRITE)) return (T*)this->getActualScene().getSprites().get(entity_id);
 	}
-	if (component_type == BOX2D)
+	if (component_type == COMPONENT_BOX2DPHYSICS)
 	{
-		if (has_component(entity_mask, BOX2D)) return (T*)this->getActualScene().getBoxPhysics().get(entity_id);
+		if (has_component(entity_mask, COMPONENT_BOX2DPHYSICS)) return (T*)this->getActualScene().getBoxPhysics().get(entity_id);
 	}
-	if (component_type == INPUT)
+	if (component_type == COMPONENT_INPUT)
 	{
-		if (has_component(entity_mask, INPUT)) return (T*)(this->getActualScene().getInputs().get(entity_id));
+		if (has_component(entity_mask, COMPONENT_INPUT)) return (T*)(this->getActualScene().getInputs().get(entity_id));
 	}
 
 	return (T*)nullptr;

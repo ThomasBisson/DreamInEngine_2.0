@@ -41,9 +41,9 @@ typedef enum
 typedef enum : unsigned int
 {
 	NONE = 0,
-	SPRITE = 1 << 0,
-	BOX2D = 1 << 1,
-	INPUT = 1 << 2,
+	COMPONENT_SPRITE = 1 << 0,
+	COMPONENT_BOX2DPHYSICS = 1 << 1,
+	COMPONENT_INPUT = 1 << 2,
 	COMPONENT_TOTAL = 1 << 3,
 } ComponentType;
 

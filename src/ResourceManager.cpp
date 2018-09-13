@@ -114,8 +114,8 @@ Texture ResourceManager::loadTextureFromFile(const GLchar *file, GLboolean alpha
 		texture.Image_Format = GL_RGBA;
 	}
 	// Load image
-	int width, height;
-	unsigned char* image = SOIL_load_image(file, &width, &height, 0, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
+	int width, height, num_channels; // TODO: Include this in Texture structure
+	unsigned char* image = SOIL_load_image(file, &width, &height, &num_channels, texture.Image_Format == GL_RGBA ? SOIL_LOAD_RGBA : SOIL_LOAD_RGB);
 	// Now generate texture
 	texture.Generate(width, height, image);
 	// And finally free image data

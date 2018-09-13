@@ -6,10 +6,11 @@
 #include <GLFWEnvironment.h>
 
 #include <scenes/SceneManager.h>
-#include "ImGui/imgui.h"
+#include <ImGui/imgui.h>
 #include <ImGui/imgui_impl_glfw.h>
 #include <ImGui/imgui_impl_opengl3.h>
-#include <ImGui/imgui_internal.h>
+// TODO: Remove this include as well as the ToggleButton from this file
+#include <ImGui/imgui_internal.h> // NOTE: Only for ToggleButton example..
 
 /////////////////////////////////////////
 float value = 0.00f;
@@ -126,20 +127,20 @@ int ImGuiHUD::init() {
 	m_show_demo_window = true;
 
 	//TODO: never forget to update this map when adding a new type
-	component_names_map[SPRITE] = "Sprite Component";
-	component_names_map[INPUT] = "Input Component";
-	component_names_map[BOX2D] = "BoxPhysics Component";
+	component_names_map[COMPONENT_SPRITE] = "Sprite Component";
+	component_names_map[COMPONENT_INPUT] = "Input Component";
+	component_names_map[COMPONENT_BOX2DPHYSICS] = "BoxPhysics Component";
 
-	component_types_map[component_names_map[SPRITE]] = SPRITE;
-	component_types_map[component_names_map[INPUT]] = INPUT;
-	component_types_map[component_names_map[BOX2D]] = BOX2D;
+	component_types_map[component_names_map[COMPONENT_SPRITE]] = COMPONENT_SPRITE;
+	component_types_map[component_names_map[COMPONENT_INPUT]] = COMPONENT_INPUT;
+	component_types_map[component_names_map[COMPONENT_BOX2DPHYSICS]] = COMPONENT_BOX2DPHYSICS;
 }
 
 void ImGuiHUD::update() {
 	static int entitySelected = -1;
 	static int sceneSelected = -1;
 
-	static unsigned int component_selected = SPRITE;
+	static unsigned int component_selected = COMPONENT_SPRITE;
 	static bool show_listbox_components = false;
 
 	static bool queryComponentInfo = false; // TODO: See if it is really useful in the future
@@ -173,12 +174,26 @@ void ImGuiHUD::update() {
 			}
 			ImGui::EndMenuBar();
 		}
-		if (ImGui::Button("play")) {
-			if (m_scene_manager.getRunningConfigEnum() == CONFIG)
-				m_scene_manager.setRunningConfigEnum(RUNNING);
-			else
-				m_scene_manager.setRunningConfigEnum(CONFIG);
+
+		ImGui::BeginGroup();
+		{
+			const Texture texture_button_play = ResourceManager::GetTexture("play");
+			if (ImGui::ImageButton((void*)(intptr_t)texture_button_play.ID, ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), 0)) {
+				if (m_scene_manager.getRunningConfigEnum() == CONFIG && m_scene_manager.getRunningConfigEnum() != RUNNING)
+				{
+					m_scene_manager.setRunningConfigEnum(RUNNING);
+				}
+			}
+			ImGui::SameLine();
+			const Texture texture_button_stop = ResourceManager::GetTexture("stop");
+			if (ImGui::ImageButton((void*)(intptr_t)texture_button_stop.ID, ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), 0)) {
+				if (m_scene_manager.getRunningConfigEnum() == RUNNING && m_scene_manager.getRunningConfigEnum() != CONFIG)
+				{
+					m_scene_manager.setRunningConfigEnum(CONFIG);
+				}
+			}
 		}
+		ImGui::EndGroup();
 
 		this->UpdateCurrentWindowRectData(&m_window_menubar);
 
@@ -289,7 +304,7 @@ void ImGuiHUD::update() {
 		// TODO: Make a component info file (or Interface with Strategy pattern) to define what to do with each component !
 		if (entitySelected != -1 && sceneSelected != -1) // TOOD: only for test purpose ! Replace by better API calls
 		{
-			if (component_selected == SPRITE)
+			if (component_selected == COMPONENT_SPRITE)
 			{
 				if (ImGui::TreeNode("Position"))
 				{
@@ -374,7 +389,7 @@ void ImGuiHUD::update() {
 				}
 			}
 
-			if (component_selected == INPUT)
+			if (component_selected == COMPONENT_INPUT)
 			{
 				if (ImGui::TreeNode("Key Mapping"))
 				{
@@ -468,9 +483,19 @@ void ImGuiHUD::update() {
 		ImGui::SetWindowSize(ImVec2((m_glfw_environment->get_width() - m_window_scene.w - m_window_entity.w), m_glfw_environment->get_height() * 0.3f));
 		ImGui::SetWindowPos(ImVec2(m_window_scene.w, (m_glfw_environment->get_height() * 0.7f))); // 0.8f stands for "glfw_height - (glfw_height * 0.2))" <=> "glfw_height * (1 - 0.2f)" <=> "glfw_height * 0.8f";
 
+		//if (ImGui::TreeNode("Rendering more text into the same line"))
+		//{
+		//	// Using the Selectable() override that takes "bool* p_selected" parameter and toggle your booleans automatically.
+		//	static bool selected[3] = { false, false, false };
+		//	ImGui::Selectable("main.c", &selected[0]); ImGui::SameLine(300); ImGui::Text(" 2,345 bytes");
+		//	ImGui::Selectable("Hello.cpp", &selected[1]); ImGui::SameLine(300); ImGui::Text("12,345 bytes");
+		//	ImGui::Selectable("Hello.h", &selected[2]); ImGui::SameLine(300); ImGui::Text(" 2,345 bytes");
+		//	ImGui::TreePop();
+		//}
+
 		ImGui::BeginGroup();
 		// 0. Get textures bank data
-		auto textures_bank = ResourceManager::GetTexturesBank();
+		const std::map<std::string, Texture> textures_bank = ResourceManager::GetTexturesBank();
 
 		for (auto& it : textures_bank)
 		{
@@ -485,20 +510,20 @@ void ImGuiHUD::update() {
 			// 2. Clickable/Double-Clickable Texture&Text Button
 			ImGui::BeginGroup();
 
-				bool button_pressed = false;
-				const int frame_padding = 0; // NO_FRAME_PADDING
-				const ImVec2 text_size = ImGui::CalcTextSize(it.first.c_str());
+			bool button_pressed = false;
+			const int frame_padding = 0; // NO_FRAME_PADDING
+			const ImVec2 text_size = ImGui::CalcTextSize(it.first.c_str());
 
-				button_pressed = ImGui::ImageButton((void*)(intptr_t)texture.ID, ImVec2(64.0f, 64.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), frame_padding);
-				// Text Centered
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x)/2));
-				ImGui::Text(it.first.c_str());
+			button_pressed = ImGui::ImageButton((void*)(intptr_t)texture.ID, ImVec2(64.0f, 64.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), frame_padding);
+			// Text Centered
+			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x) / 2));
+			ImGui::Text(it.first.c_str());
 
 			ImGui::EndGroup();
 			ImGui::SameLine();
 
-			// 2. Make textures selectable if an entity is selected AND has a SPRITE component (which is ALWAYS the case in our engine)
-			if( entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities()[entitySelected].mask, SPRITE) )
+			// 2. Make textures selectable if an entity is selected AND has a COMPONENT_SPRITE component (which is ALWAYS the case in our engine)
+			if (entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities()[entitySelected].mask, COMPONENT_SPRITE))
 			{
 				if (button_pressed)
 				{
@@ -508,7 +533,7 @@ void ImGuiHUD::update() {
 			}
 			else
 			{
-				//query_info_text_chooseentity = true;
+				// Trigger boolean->true to update Text
 			}
 		}
 
@@ -605,6 +630,7 @@ void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
 	window_rect->h = ImGui::GetWindowHeight();
 }
 
+#pragma region Edit text by right-clicking on a button
 // TODO: right click on button to update its content (can do the same with text)
 //static char name[32] = "Label1";
 //char buf[64]; sprintf(buf, "Button: %s###Button", name); // ### operator override ID ignoring the preceding label
@@ -618,6 +644,7 @@ void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
 //	ImGui::EndPopup();
 //}
 //ImGui::SameLine(); ImGui::Text("(<-- right-click here)");
+#pragma endregion
 
 #pragma region Text Wrapping
 //ImGui::PushTextWrapPos(this window width - text position x);
@@ -626,15 +653,6 @@ void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
 //ImGui::Text("All the texts to wrap here as ImGui::Text", wrap_width);
 //ImGui::PopTextWrapPos();
 #pragma endregion
-
-#pragma region Textured button
-//ImGui::PushID(i);
-//int frame_padding = -1 + i;     // -1 = uses default padding
-//if (ImGui::ImageButton(my_tex_id, ImVec2(32, 32), ImVec2(0, 0), ImVec2(32.0f / my_tex_w, 32 / my_tex_h), frame_padding, ImColor(0, 0, 0, 255)))
-//pressed_count += 1;
-//ImGui::PopID();
-//ImGui::SameLine();
-#pragma endregion 
 
 #pragma region Drag'N'Drop
 //if (ImGui::TreeNode("Drag and Drop"))
@@ -714,3 +732,33 @@ void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
 //	ImGui::TreePop();
 //}
 #pragma endregion
+
+#pragma region TreeNode
+//if (ImGui::TreeNode("Rendering more text into the same line"))
+//{
+//	// Using the Selectable() override that takes "bool* p_selected" parameter and toggle your booleans automatically.
+//	static bool selected[3] = { false, false, false };
+//	ImGui::Selectable("main.c", &selected[0]); ImGui::SameLine(300); ImGui::Text(" 2,345 bytes");
+//	ImGui::Selectable("Hello.cpp", &selected[1]); ImGui::SameLine(300); ImGui::Text("12,345 bytes");
+//	ImGui::Selectable("Hello.h", &selected[2]); ImGui::SameLine(300); ImGui::Text(" 2,345 bytes");
+//	ImGui::TreePop();
+//}
+#pragma endregion
+
+#pragma region Get (recursively) project architecture (folders AND files) from given path
+#include <dirent/dirent.h>
+//DIR *dir;
+//struct dirent *ent;
+//if ((dir = opendir("c:\\src\\")) != NULL) {
+//	/* print all the files and directories within directory */
+//	while ((ent = readdir(dir)) != NULL) {
+//		printf("%s\n", ent->d_name);
+//	}
+//	closedir(dir);
+//}
+//else {
+//	/* could not open directory */
+//	perror("");
+//	return EXIT_FAILURE;
+//}
+#pragma endregion 
