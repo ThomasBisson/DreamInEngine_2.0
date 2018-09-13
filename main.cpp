@@ -13,10 +13,12 @@ int main() {
 	GLFWEnvironment* m_glfw_environment = new GLFWEnvironment(false);
 	m_glfw_environment->init();
 
+	// TODO: Move this into a GLEWEnvironment/GLEWContext class
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
+	{
 		throw std::runtime_error("glewInit failed");
-
+	}
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 

@@ -12,6 +12,9 @@
 // TODO: Remove this include as well as the ToggleButton from this file
 #include <ImGui/imgui_internal.h> // NOTE: Only for ToggleButton example..
 
+bool button_play_disabled = false;
+bool button_stop_disabled = true;
+
 /////////////////////////////////////////
 float value = 0.00f;
 float positionX = 0.00f, positionY = 0.00f;
@@ -177,14 +180,21 @@ void ImGuiHUD::update() {
 
 		ImGui::BeginGroup();
 		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.1f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.2f));
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+		
 			const Texture texture_button_play = ResourceManager::GetTexture("play");
-			if (ImGui::ImageButton((void*)(intptr_t)texture_button_play.ID, ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), 0)) {
+			if (ImGui::ImageButton((void*)(intptr_t)texture_button_play.ID, ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), 0, ImVec4())) {
 				if (m_scene_manager.getRunningConfigEnum() == CONFIG && m_scene_manager.getRunningConfigEnum() != RUNNING)
 				{
 					m_scene_manager.setRunningConfigEnum(RUNNING);
 				}
 			}
+
 			ImGui::SameLine();
+
 			const Texture texture_button_stop = ResourceManager::GetTexture("stop");
 			if (ImGui::ImageButton((void*)(intptr_t)texture_button_stop.ID, ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), 0)) {
 				if (m_scene_manager.getRunningConfigEnum() == RUNNING && m_scene_manager.getRunningConfigEnum() != CONFIG)
@@ -192,6 +202,8 @@ void ImGuiHUD::update() {
 					m_scene_manager.setRunningConfigEnum(CONFIG);
 				}
 			}
+
+			ImGui::PopStyleColor(4);
 		}
 		ImGui::EndGroup();
 
@@ -494,49 +506,63 @@ void ImGuiHUD::update() {
 		//}
 
 		ImGui::BeginGroup();
-		// 0. Get textures bank data
-		const std::map<std::string, Texture> textures_bank = ResourceManager::GetTexturesBank();
-
-		for (auto& it : textures_bank)
 		{
-			const std::string texture_name = it.first; // name;
-			auto texture = it.second; // TODO: Load texture into ImGui
+			ImGui::Text("Hi:");
+		}
+		ImGui::EndGroup();
+		ImGui::SameLine();
+		ImGui::BeginGroup();
+		{
+			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.1f));
+			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.2f));
+			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 
-			// 1. TODO: Display all loaded resources (textures, for the moment)
-				// Grid (selectable)
-					// Texture Image
-					// Text (under image, centered)Some Tex
+			// 0. Get textures bank data
+			const std::map<std::string, Texture> textures_bank = ResourceManager::GetTexturesBank();
 
-			// 2. Clickable/Double-Clickable Texture&Text Button
-			ImGui::BeginGroup();
-
-			bool button_pressed = false;
-			const int frame_padding = 0; // NO_FRAME_PADDING
-			const ImVec2 text_size = ImGui::CalcTextSize(it.first.c_str());
-
-			button_pressed = ImGui::ImageButton((void*)(intptr_t)texture.ID, ImVec2(64.0f, 64.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), frame_padding);
-			// Text Centered
-			ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x) / 2));
-			ImGui::Text(it.first.c_str());
-
-			ImGui::EndGroup();
-			ImGui::SameLine();
-
-			// 2. Make textures selectable if an entity is selected AND has a COMPONENT_SPRITE component (which is ALWAYS the case in our engine)
-			if (entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities()[entitySelected].mask, COMPONENT_SPRITE))
+			for (auto& it : textures_bank)
 			{
-				if (button_pressed)
+				const std::string texture_name = it.first; // name;
+				auto texture = it.second; // TODO: Load texture into ImGui
+
+										  // 1. TODO: Display all loaded resources (textures, for the moment)
+										  // Grid (selectable)
+										  // Texture Image
+										  // Text (under image, centered)Some Tex
+
+										  // 2. Clickable/Double-Clickable Texture&Text Button
+				ImGui::BeginGroup();
+
+				bool button_pressed = false;
+				const int frame_padding = 0; // NO_FRAME_PADDING
+				const ImVec2 text_size = ImGui::CalcTextSize(it.first.c_str());
+
+				button_pressed = ImGui::ImageButton((void*)(intptr_t)texture.ID, ImVec2(64.0f, 64.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), frame_padding);
+				// Text Centered
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x) / 2));
+				ImGui::Text(it.first.c_str());
+
+				ImGui::EndGroup();
+				ImGui::SameLine();
+
+				// 2. Make textures selectable if an entity is selected AND has a COMPONENT_SPRITE component (which is ALWAYS the case in our engine)
+				if (entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities()[entitySelected].mask, COMPONENT_SPRITE))
 				{
-					// Selected entity takes the selected Texture
-					m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Texture = ResourceManager::GetTexture(texture_name);
+					if (button_pressed)
+					{
+						// Selected entity takes the selected Texture
+						m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Texture = ResourceManager::GetTexture(texture_name);
+					}
+				}
+				else
+				{
+					// Trigger boolean->true to update Text
 				}
 			}
-			else
-			{
-				// Trigger boolean->true to update Text
-			}
-		}
 
+			ImGui::PopStyleColor(4);
+		}
 		ImGui::EndGroup();
 
 		this->UpdateCurrentWindowRectData(&m_window_explorer);
@@ -762,3 +788,17 @@ void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
 //	return EXIT_FAILURE;
 //}
 #pragma endregion 
+
+#pragma region Configure Button(s) Color
+//for (int i = 0; i < 7; i++)
+//{
+//	if (i > 0) ImGui::SameLine();
+//	ImGui::PushID(i);
+//	ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor::HSV(i / 7.0f, 0.6f, 0.6f));
+//	ImGui::PushStyleColor(ImGuiCol_ButtonHovered, (ImVec4)ImColor::HSV(i / 7.0f, 0.7f, 0.7f));
+//	ImGui::PushStyleColor(ImGuiCol_ButtonActive, (ImVec4)ImColor::HSV(i / 7.0f, 0.8f, 0.8f));
+//	ImGui::Button("Click");
+//	ImGui::PopStyleColor(3);
+//	ImGui::PopID();
+//}
+#pragma endregion
