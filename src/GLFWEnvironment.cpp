@@ -94,7 +94,7 @@ std::vector<InputEnum> GLFWEnvironment::process_input() const {
 
 int GLFWEnvironment::init() {
 	glfwSetErrorCallback(error_callback);
-
+	
 	if (!glfwInit())
 	{
 		std::cout << "Error: Could not initialize GLFW !" << std::endl;
