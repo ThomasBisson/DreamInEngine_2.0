@@ -107,7 +107,7 @@ void SceneManager::run() const {
 		int y = m_ImGui_HUD->m_window_explorer.h + (m_glfw_environment->get_height() * 0.030f); // optional, only to have square textures
 		unsigned int width = m_ImGui_HUD->m_window_entity.x - x; // NOTE: Not very reliable..
 		unsigned int height = (m_glfw_environment->get_height() - m_ImGui_HUD->m_window_explorer.h) - m_ImGui_HUD->m_window_menubar.h - (m_glfw_environment->get_height() * 0.060f); // *0.035f to have square textures
-
+		
 		// NOTE: (Re)Define the zone where OpenGL can Draw/Render things
 		glEnable(GL_SCISSOR_TEST);
 		glScissor(x, y, width, height); // Redefine the OpenGL's drawable zone

@@ -483,17 +483,32 @@ void ImGuiHUD::update() {
 					// Text (under image, centered)Some Tex
 
 			// 2. Clickable/Double-Clickable Texture&Text Button
-			const bool button_pressed = ImGui::Button(it.first.c_str(), ImVec2(64.0f, 64.0f));
+			ImGui::BeginGroup();
+
+				bool button_pressed = false;
+				const int frame_padding = 0; // NO_FRAME_PADDING
+				const ImVec2 text_size = ImGui::CalcTextSize(it.first.c_str());
+
+				button_pressed = ImGui::ImageButton((void*)(intptr_t)texture.ID, ImVec2(64.0f, 64.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), frame_padding);
+				// Text Centered
+				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x)/2));
+				ImGui::Text(it.first.c_str());
+			
+			ImGui::EndGroup();
 			ImGui::SameLine();
 
-			// 2. Make textures selectable if an entity is selected
+			// 2. Make textures selectable if an entity is selected AND has a SPRITE component (which is ALWAYS the case in our engine)
 			if( entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities()[entitySelected].mask, SPRITE) )
 			{
 				if (button_pressed)
 				{
-					// 2.2. Selected entity takes the selected Texture
+					// Selected entity takes the selected Texture
 					m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Texture = ResourceManager::GetTexture(texture_name);
 				}
+			}
+			else
+			{
+				//query_info_text_chooseentity = true;
 			}
 		}
 
@@ -590,7 +605,7 @@ void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
 	window_rect->h = ImGui::GetWindowHeight();
 }
 
-// TODO: right click on button to update its content (can do the same with text !
+// TODO: right click on button to update its content (can do the same with text)
 //static char name[32] = "Label1";
 //char buf[64]; sprintf(buf, "Button: %s###Button", name); // ### operator override ID ignoring the preceding label
 //ImGui::Button(buf);
@@ -604,54 +619,98 @@ void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
 //}
 //ImGui::SameLine(); ImGui::Text("(<-- right-click here)");
 
-// NOTE: DRAW IMAGE EXAMPLE ?
-// Recreate the VAO every time
-// (This is to easily allow multiple GL contexts. VAO are not shared among GL contexts, and we don't track creation/deletion of windows so we don't have an obvious key to use to cache them.)
-//GLuint vao_handle = 0;
-//glGenVertexArrays(1, &vao_handle);
-//glBindVertexArray(vao_handle);
-//glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-//glEnableVertexAttribArray(g_AttribLocationPosition);
-//glEnableVertexAttribArray(g_AttribLocationUV);
-//glEnableVertexAttribArray(g_AttribLocationColor);
-//glVertexAttribPointer(g_AttribLocationPosition, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)IM_OFFSETOF(ImDrawVert, pos));
-//glVertexAttribPointer(g_AttribLocationUV, 2, GL_FLOAT, GL_FALSE, sizeof(ImDrawVert), (GLvoid*)IM_OFFSETOF(ImDrawVert, uv));
-//glVertexAttribPointer(g_AttribLocationColor, 4, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(ImDrawVert), (GLvoid*)IM_OFFSETOF(ImDrawVert, col));
-//
-//// Draw
-//ImVec2 pos = draw_data->DisplayPos;
-//for (int n = 0; n < draw_data->CmdListsCount; n++)
+#pragma region Text Wrapping
+//ImGui::PushTextWrapPos(this window width - text position x);
+//ImGui::Text("All the texts to wrap here as ImGui::Text", wrap_width);
+//ImGui::Text("All the texts to wrap here as ImGui::Text", wrap_width);
+//ImGui::Text("All the texts to wrap here as ImGui::Text", wrap_width);
+//ImGui::PopTextWrapPos();
+#pragma endregion
+
+#pragma region Textured button
+//ImGui::PushID(i);
+//int frame_padding = -1 + i;     // -1 = uses default padding
+//if (ImGui::ImageButton(my_tex_id, ImVec2(32, 32), ImVec2(0, 0), ImVec2(32.0f / my_tex_w, 32 / my_tex_h), frame_padding, ImColor(0, 0, 0, 255)))
+//pressed_count += 1;
+//ImGui::PopID();
+//ImGui::SameLine();
+#pragma endregion 
+
+#pragma region Drag'N'Drop
+//if (ImGui::TreeNode("Drag and Drop"))
 //{
-//	const ImDrawList* cmd_list = draw_data->CmdLists[n];
-//	const ImDrawIdx* idx_buffer_offset = 0;
-//
-//	glBindBuffer(GL_ARRAY_BUFFER, g_VboHandle);
-//	glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)cmd_list->VtxBuffer.Size * sizeof(ImDrawVert), (const GLvoid*)cmd_list->VtxBuffer.Data, GL_STREAM_DRAW);
-//
-//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, g_ElementsHandle);
-//	glBufferData(GL_ELEMENT_ARRAY_BUFFER, (GLsizeiptr)cmd_list->IdxBuffer.Size * sizeof(ImDrawIdx), (const GLvoid*)cmd_list->IdxBuffer.Data, GL_STREAM_DRAW);
-//
-//	for (int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++)
 //	{
-//		const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
-//		if (pcmd->UserCallback)
-//		{
-//			// User callback (registered via ImDrawList::AddCallback)
-//			pcmd->UserCallback(cmd_list, pcmd);
-//		}
-//		else
-//		{
-//			ImVec4 clip_rect = ImVec4(pcmd->ClipRect.x - pos.x, pcmd->ClipRect.y - pos.y, pcmd->ClipRect.z - pos.x, pcmd->ClipRect.w - pos.y);
-//			if (clip_rect.x < fb_width && clip_rect.y < fb_height && clip_rect.z >= 0.0f && clip_rect.w >= 0.0f)
-//			{
-//				// Apply scissor/clipping rectangle
-//				glScissor((int)clip_rect.x, (int)(fb_height - clip_rect.w), (int)(clip_rect.z - clip_rect.x), (int)(clip_rect.w - clip_rect.y));
-//
-//				// Bind texture, Draw
-//				glBindTexture(GL_TEXTURE_2D, (GLuint)(intptr_t)pcmd->TextureId);
-//				glDrawElements(GL_TRIANGLES, (GLsizei)pcmd->ElemCount, sizeof(ImDrawIdx) == 2 ? GL_UNSIGNED_SHORT : GL_UNSIGNED_INT, idx_buffer_offset);
-//			}
-//		}
-//		idx_buffer_offset += pcmd->ElemCount;
+//		// ColorEdit widgets automatically act as drag source and drag target.
+//		// They are using standardized payload strings IMGUI_PAYLOAD_TYPE_COLOR_3F and IMGUI_PAYLOAD_TYPE_COLOR_4F to allow your own widgets
+//		// to use colors in their drag and drop interaction. Also see the demo in Color Picker -> Palette demo.
+//		ImGui::BulletText("Drag and drop in standard widgets");
+//		ImGui::Indent();
+//		static float col1[3] = { 1.0f,0.0f,0.2f };
+//		static float col2[4] = { 0.4f,0.7f,0.0f,0.5f };
+//		ImGui::ColorEdit3("color 1", col1);
+//		ImGui::ColorEdit4("color 2", col2);
+//		ImGui::Unindent();
 //	}
+//
+//	{
+//		ImGui::BulletText("Drag and drop to copy/swap items");
+//		ImGui::Indent();
+//		enum Mode
+//		{
+//			Mode_Copy,
+//			Mode_Move,
+//			Mode_Swap
+//		};
+//		static int mode = 0;
+//		if (ImGui::RadioButton("Copy", mode == Mode_Copy)) { mode = Mode_Copy; } ImGui::SameLine();
+//		if (ImGui::RadioButton("Move", mode == Mode_Move)) { mode = Mode_Move; } ImGui::SameLine();
+//		if (ImGui::RadioButton("Swap", mode == Mode_Swap)) { mode = Mode_Swap; }
+//		static const char* names[9] = { "Bobby", "Beatrice", "Betty", "Brianna", "Barry", "Bernard", "Bibi", "Blaine", "Bryn" };
+//		for (int n = 0; n < IM_ARRAYSIZE(names); n++)
+//		{
+//			ImGui::PushID(n);
+//			if ((n % 3) != 0)
+//				ImGui::SameLine();
+//			ImGui::Button(names[n], ImVec2(60, 60));
+//
+//			// Our buttons are both drag sources and drag targets here!
+//			if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_None))
+//			{
+//				ImGui::SetDragDropPayload("DND_DEMO_CELL", &n, sizeof(int));        // Set payload to carry the index of our item (could be anything)
+//				if (mode == Mode_Copy) { ImGui::Text("Copy %s", names[n]); }        // Display preview (could be anything, e.g. when dragging an image we could decide to display the filename and a small preview of the image, etc.)
+//				if (mode == Mode_Move) { ImGui::Text("Move %s", names[n]); }
+//				if (mode == Mode_Swap) { ImGui::Text("Swap %s", names[n]); }
+//				ImGui::EndDragDropSource();
+//			}
+//			if (ImGui::BeginDragDropTarget())
+//			{
+//				if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload("DND_DEMO_CELL"))
+//				{
+//					IM_ASSERT(payload->DataSize == sizeof(int));
+//					int payload_n = *(const int*)payload->Data;
+//					if (mode == Mode_Copy)
+//					{
+//						names[n] = names[payload_n];
+//					}
+//					if (mode == Mode_Move)
+//					{
+//						names[n] = names[payload_n];
+//						names[payload_n] = "";
+//					}
+//					if (mode == Mode_Swap)
+//					{
+//						const char* tmp = names[n];
+//						names[n] = names[payload_n];
+//						names[payload_n] = tmp;
+//					}
+//				}
+//				ImGui::EndDragDropTarget();
+//			}
+//			ImGui::PopID();
+//		}
+//		ImGui::Unindent();
+//	}
+//
+//	ImGui::TreePop();
 //}
+#pragma endregion
