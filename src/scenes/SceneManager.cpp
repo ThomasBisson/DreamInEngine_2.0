@@ -96,8 +96,6 @@ void SceneManager::run() const {
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-
-		
 		
 		// TODO: Trigger a viewPort update => Update Scene(s) frame to fit the screen
 		// TODO: Create window explorer at the bottom of the screen

@@ -493,7 +493,7 @@ void ImGuiHUD::update() {
 				// Text Centered
 				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x)/2));
 				ImGui::Text(it.first.c_str());
-			
+
 			ImGui::EndGroup();
 			ImGui::SameLine();
 
