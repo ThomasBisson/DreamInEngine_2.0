@@ -12,6 +12,25 @@
 // TODO: Remove this include as well as the ToggleButton from this file
 #include <ImGui/imgui_internal.h> // NOTE: Only for ToggleButton example..
 
+// NOTE: only for windows !
+#include <dirent/dirent.h>
+
+#ifdef WIN32
+#include <direct.h>
+#define GetCurrentDir _getcwd
+//#else
+//#include <unistd.h>
+//#define GetCurrentDir getcwd
+#endif
+#include<iostream>
+
+std::string GetCurrentWorkingDir(void) {
+	char buff[FILENAME_MAX];
+	GetCurrentDir(buff, FILENAME_MAX);
+	std::string current_working_dir(buff);
+	return current_working_dir;
+}
+
 bool button_play_disabled = false;
 bool button_stop_disabled = true;
 
@@ -34,6 +53,66 @@ bool* v = new bool[1]{ false };
 std::unordered_map<unsigned int, std::string> component_names_map;
 std::unordered_map<std::string, unsigned int> component_types_map;
 #pragma endregion
+
+void recursive_dir(std::string path, std::string actual_folder_name, bool root)
+{
+	DIR *dir;
+	struct dirent *ent;
+	/*static ... selectables[256];
+	static bool i = 0;*/
+
+	if ((dir = opendir(path.c_str())) != NULL)
+	{
+		// NOTE: Only opens the Root Node
+		bool tree_node_opened = false;
+		if (root) // ROOT
+		{
+			tree_node_opened = ImGui::TreeNodeEx(actual_folder_name.c_str(), ImGuiTreeNodeFlags_DefaultOpen);
+		}
+		else
+		{
+			tree_node_opened = ImGui::TreeNode(actual_folder_name.c_str());
+		}
+
+		if (tree_node_opened)
+		{
+			ImGui::BeginGroup();
+			{
+				/* print all the files and directories within directory */
+				while ((ent = readdir(dir)) != NULL) {
+					if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..") || !strcmp(ent->d_name, ".git") || !strcmp(ent->d_name, ".vs"))
+					{
+					}
+					else
+					{
+						if (ent->d_type != DT_DIR) // File
+						{
+							ImGui::Text(ent->d_name); // File name
+							ImGui::SameLine();
+							ImGui::Text("%.2f", (float)(dir->wdirp->data.nFileSizeLow) / 1000.f); // File size
+						}
+						else // Directory
+						{
+							recursive_dir(path + "\\" + ent->d_name, ent->d_name, false); // Go into Directory
+						}
+					}
+				}
+
+			}
+			ImGui::EndGroup();
+			ImGui::TreePop();
+		}
+
+		closedir(dir);
+	}
+	else
+	{
+		/* could not open directory */
+		//perror("");
+		/*return EXIT_FAILURE;*/
+	}
+
+}
 
 void ToggleButton(const char* str_id, bool* v)
 {
@@ -184,7 +263,7 @@ void ImGuiHUD::update() {
 			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.1f));
 			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.2f));
 			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-		
+
 			const Texture texture_button_play = ResourceManager::GetTexture("play");
 			if (ImGui::ImageButton((void*)(intptr_t)texture_button_play.ID, ImVec2(32.0f, 32.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), 0, ImVec4())) {
 				if (m_scene_manager.getRunningConfigEnum() == CONFIG && m_scene_manager.getRunningConfigEnum() != RUNNING)
@@ -505,65 +584,77 @@ void ImGuiHUD::update() {
 		//	ImGui::TreePop();
 		//}
 
-		ImGui::BeginGroup();
+		ImGui::BeginChildFrame(ImGui::GetID("Project Explorer"), ImVec2(m_window_explorer.w / 2, m_window_explorer.h), ImGuiWindowFlags_AlwaysVerticalScrollbar);
 		{
-			ImGui::Text("Hi:");
-		}
-		ImGui::EndGroup();
-		ImGui::SameLine();
-		ImGui::BeginGroup();
-		{
-			ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.1f));
-			ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.2f));
-			ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
-
-			// 0. Get textures bank data
-			const std::map<std::string, Texture> textures_bank = ResourceManager::GetTexturesBank();
-
-			for (auto& it : textures_bank)
+			ImGui::BeginGroup();
 			{
-				const std::string texture_name = it.first; // name;
-				auto texture = it.second; // TODO: Load texture into ImGui
+				ImGui::Text("Project Explorer");
+				recursive_dir(GetCurrentWorkingDir(), "DreamInEngine_2.0", true);
+			}
+			ImGui::EndGroup();
+		}
+		ImGui::EndChild();
+		ImGui::SameLine();
+		ImGui::BeginChildFrame(ImGui::GetID("Resource Explorer"), ImVec2(m_window_explorer.w / 2, m_window_explorer.h), ImGuiWindowFlags_AlwaysVerticalScrollbar);
+		{
+			ImGui::Text("Resource Explorer");
+			ImGui::BeginGroup();
+			{
+				ImGui::PushStyleColor(ImGuiCol_Button, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonHovered, ImVec4(0.0f, 0.0f, 0.0f, 0.1f));
+				ImGui::PushStyleColor(ImGuiCol_ButtonActive, ImVec4(0.0f, 0.0f, 0.0f, 0.2f));
+				ImGui::PushStyleColor(ImGuiCol_Border, ImVec4(0.0f, 0.0f, 0.0f, 0.0f));
 
-										  // 1. TODO: Display all loaded resources (textures, for the moment)
-										  // Grid (selectable)
-										  // Texture Image
-										  // Text (under image, centered)Some Tex
-
-										  // 2. Clickable/Double-Clickable Texture&Text Button
-				ImGui::BeginGroup();
-
+				// 0. Get textures bank data
+				const std::map<std::string, Texture> textures_bank = ResourceManager::GetTexturesBank();
 				bool button_pressed = false;
 				const int frame_padding = 0; // NO_FRAME_PADDING
-				const ImVec2 text_size = ImGui::CalcTextSize(it.first.c_str());
-
-				button_pressed = ImGui::ImageButton((void*)(intptr_t)texture.ID, ImVec2(64.0f, 64.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), frame_padding);
-				// Text Centered
-				ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x) / 2));
-				ImGui::Text(it.first.c_str());
-
-				ImGui::EndGroup();
-				ImGui::SameLine();
-
-				// 2. Make textures selectable if an entity is selected AND has a COMPONENT_SPRITE component (which is ALWAYS the case in our engine)
-				if (entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities()[entitySelected].mask, COMPONENT_SPRITE))
+				int nb_textures = 0;
+				
+				for (auto& it : textures_bank)
 				{
-					if (button_pressed)
+					const std::string texture_name = it.first; // name;
+					const auto texture = it.second; // texture
+					const ImVec2 text_size = ImGui::CalcTextSize(it.first.c_str());
+					nb_textures++;
+
+					// Si le nombre de textures dépasse 7,
+
+					// On créé un groupe
+					ImGui::BeginGroup();
+					
+						button_pressed = ImGui::ImageButton((void*)(intptr_t)texture.ID, ImVec2(64.0f, 64.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), frame_padding);
+						// Text Centered
+						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x) / 2));
+						ImGui::Text(it.first.c_str());
+					
+					ImGui::EndGroup();
+
+					// NOTE: 7 <=> Number of Max textures per line
+					if((nb_textures % 7) != 0) // Not multiple of 7
 					{
-						// Selected entity takes the selected Texture
-						m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Texture = ResourceManager::GetTexture(texture_name);
+						ImGui::SameLine();
+					}
+
+					// 2. Make textures selectable if an entity is selected AND has a COMPONENT_SPRITE component (which is ALWAYS the case in our engine)
+					if (entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities()[entitySelected].mask, COMPONENT_SPRITE))
+					{
+						if (button_pressed)
+						{
+							// Selected entity takes the selected Texture
+							m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Texture = ResourceManager::GetTexture(texture_name);
+						}
+					}
+					else
+					{
+						// Trigger boolean->true to update Text
 					}
 				}
-				else
-				{
-					// Trigger boolean->true to update Text
-				}
+				ImGui::PopStyleColor(4);
 			}
-
-			ImGui::PopStyleColor(4);
+			ImGui::EndGroup();
 		}
-		ImGui::EndGroup();
+		ImGui::EndChildFrame();
 
 		this->UpdateCurrentWindowRectData(&m_window_explorer);
 
@@ -772,7 +863,7 @@ void ImGuiHUD::UpdateCurrentWindowRectData(ImGuiWindowRect* window_rect)
 #pragma endregion
 
 #pragma region Get (recursively) project architecture (folders AND files) from given path
-#include <dirent/dirent.h>
+//#include <dirent/dirent.h>
 //DIR *dir;
 //struct dirent *ent;
 //if ((dir = opendir("c:\\src\\")) != NULL) {
