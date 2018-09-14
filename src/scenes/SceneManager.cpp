@@ -59,6 +59,8 @@ bool SceneManager::init() {
 	add_entity("face_entity");
 	add_entity("pokeball_entity");
 
+	this->add_component(COMPONENT_BOX2DPHYSICS, 0);
+
 	// Face (Entity ID: 1)
 	this->get_component<Sprite>(COMPONENT_SPRITE, 1)->Texture = ResourceManager::GetTexture("face");
 	this->get_component<Sprite>(COMPONENT_SPRITE, 1)->Position = glm::vec2(50.0, 300.0f);
@@ -111,6 +113,15 @@ void SceneManager::run() const {
 		glClearColor(0.6f, 0.6f, 0.6f, 1.0f); // Clear only the defined zone
 		glClear(GL_COLOR_BUFFER_BIT);
 		glDisable(GL_SCISSOR_TEST);
+
+		//glColor3d(1, 0, 0);
+		//glBegin(GL_QUADS);
+		//glVertex2f(0.0f, 10.0f); // top left
+		//glVertex2f(10.0f, 10.0f); // top right 
+		//glVertex2f(10.0f, -0.0f); // bottom right
+		//glVertex2f(-0.0f, -0.0f); // bottom left
+
+		//glEnd();
 
 		m_ImGui_HUD->update();
 

@@ -15,7 +15,7 @@ m_sprites(), m_box_physique(), m_inputs(), m_entities() {
 void Scene::update(std::vector<InputEnum> inputs) {
 	m_box_physics_system.update(m_box_physique, m_sprites);
 	m_input_system.update(inputs, m_inputs, m_sprites);
-	m_world->Step(1.0 / 50.0, 8, 3);
+	m_world->Step(1.0 / 1.0, 8, 3);
 }
 
 void Scene::render() {

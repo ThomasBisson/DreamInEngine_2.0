@@ -757,6 +757,19 @@ void ImGuiHUD::update() {
 					ImGui::TreePop();
 				}
 			}
+
+			if (component_selected == COMPONENT_BOX2DPHYSICS) {
+				if (ImGui::TreeNode("Body Def")) {
+					ImGui::BeginGroup();
+
+					ImGui::Text("position");
+					ImGui::SameLine();
+					//ImGui::InputFloat("X", &(m_scene_manager.getActualScene().getBoxPhysics().get(entitySelected)->getBody()->GetPosition()).x);
+
+					ImGui::EndGroup();
+					ImGui::TreePop();
+				}
+			}
 		}
 		ImGui::EndChild();
 
