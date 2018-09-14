@@ -23,6 +23,9 @@
 //#define GetCurrentDir getcwd
 #endif
 #include<iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 std::string GetCurrentWorkingDir(void) {
 	char buff[FILENAME_MAX];
@@ -125,7 +128,7 @@ namespace ImGui {
 
 		if (tbs->currentidx > 0)
 		{
-			if(table_alignment == HORIZONTAL)
+			if (table_alignment == HORIZONTAL)
 			{
 				ImGui::SameLine();
 			}
@@ -166,7 +169,7 @@ namespace ImGui {
 		// NOTE: Those lines were part of a mistake: incrementing the variable of the selected tab before selecting it..
 		// tbs->currentidx++;
 		// return CurTabs->selectedIdx == tbs->currentidx;
-		
+
 		return CurTabs->selectedIdx == tbs->currentidx++;
 	}
 }
@@ -193,6 +196,9 @@ bool* v = new bool[1]{ false };
 std::unordered_map<unsigned int, std::string> component_names_map;
 std::unordered_map<std::string, unsigned int> component_types_map;
 #pragma endregion
+
+static std::string fileCode;
+bool query_display_file_code = false;
 
 void recursive_dir(std::string path, std::string actual_folder_name, bool root)
 {
@@ -227,9 +233,29 @@ void recursive_dir(std::string path, std::string actual_folder_name, bool root)
 					{
 						if (ent->d_type != DT_DIR) // File
 						{
-							ImGui::Text(ent->d_name); // File name
-							ImGui::SameLine();
-							ImGui::Text("%.2f", (float)(dir->wdirp->data.nFileSizeLow) / 1000.f); // File size
+							// Display file contents on_click
+							if (ImGui::Selectable(ent->d_name)) // File selected
+							{
+								// Retrieve the file source code from the "pathfile"
+								try
+								{
+									// Open file
+									std::ifstream file(path + "\\" + ent->d_name); // Open file
+									std::stringstream fileStream; // Create file stream
+									fileStream << file.rdbuf(); // Put file data into stream
+									file.close(); // Close file
+									fileCode = fileStream.str(); // Retrieve file code from streamv
+								}
+								catch (std::exception e)
+								{
+									std::cout << "ERROR::SHADER: Failed to read shader files" << std::endl;
+								}
+
+								//ImGui::Text("%.2f", (float)(dir->wdirp->data.nFileSizeLow) / 1000.f); // File size
+
+
+								
+							}
 						}
 						else // Directory
 						{
@@ -238,6 +264,7 @@ void recursive_dir(std::string path, std::string actual_folder_name, bool root)
 					}
 				}
 
+				ImGui::Text(fileCode.c_str());
 			}
 			ImGui::EndGroup();
 			ImGui::TreePop();
@@ -747,7 +774,7 @@ void ImGuiHUD::update() {
 
 		ImGui::BeginChildFrame(ImGui::GetID("Project Explorer"), ImVec2(ImGui::GetWindowWidth() / 2 - (ImGui::GetStyle().WindowPadding.x * 2), ImGui::GetWindowHeight() - (ImGui::GetStyle().WindowPadding.x * 4) - 5), ImGuiWindowFlags_AlwaysVerticalScrollbar);
 		{
-			#pragma region TABS (TEST): Horizontal || Vertical
+#pragma region TABS (TEST): Horizontal || Vertical
 			//const ImGui::Alignment table_alignment = ImGui::Alignment::HORIZONTAL;
 			//unsigned int selected_tab = 1; // TODO: should not be defined here... it works only because there if a IF-statement to AddTab() function
 			//const unsigned int num_tabs = 3;
@@ -834,9 +861,13 @@ void ImGuiHUD::update() {
 					ImGui::EndGroup();
 
 					// NOTE: 7 <=> Number of Max textures per line
-					if ((nb_textures % 7) != 0) // Not multiple of 7
+					if ((nb_textures * 64.0f < ImGui::GetWindowWidth() - ImGui::GetStyle().ScrollbarSize - (ImGui::GetStyle().WindowPadding.x * 2) - (2 * 64.0f))) // Not multiple of 7
 					{
 						ImGui::SameLine();
+					}
+					else // Out of frame -> Return to next line;
+					{
+						nb_textures = 0;
 					}
 
 					// 2. Make textures selectable if an entity is selected AND has a COMPONENT_SPRITE component (which is ALWAYS the case in our engine)
