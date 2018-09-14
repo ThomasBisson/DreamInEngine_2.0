@@ -25,29 +25,31 @@ public:
 		map[id] = vector.size() - 1;
 	}
 
-	bool remove(unsigned int indice) {
-		//Remove the component from the vector
-		int i = map[indice];
-		//vector.at(i) = vector[vector.size() - 1];
-		vector[i] = vector[vector.size() - 1];
-		vector.pop_back();
+	bool remove(unsigned int instance_id) {
+		if (vector.empty()) return false;
+		if (map.empty()) return false;
 
-		//Remove the component from the map
-		std::unordered_map<unsigned int, unsigned int>::iterator it2;
-		for (std::unordered_map<unsigned int, unsigned int>::iterator it = map.begin(); it != map.end(); ++it) {
-			int ii = it->second;
-			if (ii == i) {
-				it2 = it;
-				//map.erase(it);
-				//return true;
+		int vector_id = map[instance_id]; // Get the vector id from the given (entity/component) ID;
+		int last = vector.size() - 1;
+		
+		vector[vector_id] = vector[last]; // Last comes to front (->continguous)
+
+		std::unordered_map<unsigned int, unsigned int>::iterator itCopy;
+		for (auto it = map.begin(); it != map.end(); ++it)
+		{
+			if (it->second == vector_id)
+			{
+				itCopy = it;
 			}
-			else if (ii > i) {
-				it->second -= 1;
+			else if (it->second == last)
+			{
+				map[itCopy->first] = vector_id;
 			}
 		}
-		map.erase(it2);
+		map.erase(itF->first);
 
-		return false;
+		vector.pop_back(); // remove last ;)
+		return true;
 	}
 
 	T*& get(unsigned int indice) {

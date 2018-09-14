@@ -385,10 +385,9 @@ int ImGuiHUD::init() {
 	component_types_map[component_names_map[COMPONENT_BOX2DPHYSICS]] = COMPONENT_BOX2DPHYSICS;
 }
 
-void ImGuiHUD::update() {
-	static int entitySelected = -1;
-	static int sceneSelected = -1;
+static int entitySelected = -1;
 
+void ImGuiHUD::update() {
 	static unsigned int component_selected = COMPONENT_SPRITE;
 	static bool show_listbox_components = false;
 
@@ -475,7 +474,6 @@ void ImGuiHUD::update() {
 			for (unsigned int j = 0; j < m_scene_manager.getActualScene().getEntities().getVector().size(); j++) {
 				if (ImGui::Selectable(m_scene_manager.getActualScene().getEntities().getVector()[j]->name.c_str(), entitySelected == m_scene_manager.getActualScene().getEntities().getVector()[j]->id)) {
 					entitySelected = m_scene_manager.getActualScene().getEntities().getVector()[j]->id;
-					sceneSelected = 1;
 					// Reset the text triggered by the ADD COMPONENT (when we click on an entity in the "window scene")
 					query_add_component = BooleanCustom();
 				}
@@ -490,6 +488,23 @@ void ImGuiHUD::update() {
 				show_add_entity = false;
 			else
 				show_add_entity = true;
+		}
+
+		if (ImGui::Button("DELETE ENTITY")) {
+			//If nothing if selected (= -1)
+			if (entitySelected >= 0) {
+				m_scene_manager.remove_entity(entitySelected);
+
+				//Put it back to nothing selected
+				if (m_scene_manager.getActualScene().getEntities().getVector().empty())
+				{
+					entitySelected = -1;
+				}
+				else
+				{
+					entitySelected = m_scene_manager.getActualScene().getEntities().getVector()[0]->id;
+				}
+			}
 		}
 
 		if (show_add_entity) {
@@ -508,14 +523,7 @@ void ImGuiHUD::update() {
 
 		ImGui::EndChild();
 
-		if (ImGui::Button("DELETE ENTITY")) {
-			//If nothing if selected (= -1)
-			if (entitySelected >= 0) {
-				m_scene_manager.remove_entity(entitySelected);
-				//Put it back to nothing selected
-				entitySelected = -1;
-			}
-		}
+		
 
 	this->UpdateCurrentWindowRectData(&m_window_scene);
 
@@ -534,7 +542,7 @@ void ImGuiHUD::update() {
 		ImGui::SetWindowPos(ImVec2(m_glfw_environment->get_width() - ImGui::GetWindowWidth(), 0 + this->m_window_menubar.h));
 
 		ImGui::BeginGroup();
-		if (entitySelected != -1 && sceneSelected != -1)
+		if (entitySelected != -1)
 		{
 			Entity *entity = m_scene_manager.getActualScene().getEntities().get(entitySelected);
 
@@ -596,7 +604,7 @@ void ImGuiHUD::update() {
 		ImGui::Text("COMPONENT DETAILS");
 		ImGui::Spacing();
 		// TODO: Make a component info file (or Interface with Strategy pattern) to define what to do with each component !
-		if (entitySelected != -1 && sceneSelected != -1) // TOOD: only for test purpose ! Replace by better API calls
+		if (entitySelected != -1) // TOOD: only for test purpose ! Replace by better API calls
 		{
 			if (component_selected == COMPONENT_SPRITE)
 			{
@@ -876,12 +884,16 @@ void ImGuiHUD::update() {
 					}
 
 					// 2. Make textures selectable if an entity is selected AND has a COMPONENT_SPRITE component (which is ALWAYS the case in our engine)
-					if (entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities().get(entitySelected)->mask, COMPONENT_SPRITE))
+					if (entitySelected != -1) /* && sceneActive */
 					{
-						if (button_pressed)
+						// TOOD: THIS METHOD CRASHES THE PROGRAM IF IT IS CALLED AFTER DESTROYING THE LAST ENTITY IN THE SCENE !
+						if(has_component(m_scene_manager.getActualScene().getEntities().get(entitySelected)->mask, COMPONENT_SPRITE))
 						{
-							// Selected entity takes the selected Texture
-							m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Texture = ResourceManager::GetTexture(texture_name);
+							if (button_pressed)
+							{
+								// Selected entity takes the selected Texture
+								m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Texture = ResourceManager::GetTexture(texture_name);
+							}
 						}
 					}
 					else
