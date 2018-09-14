@@ -31,6 +31,146 @@ std::string GetCurrentWorkingDir(void) {
 	return current_working_dir;
 }
 
+bool begin_child_tab_content(unsigned int selected_tab, const char* str_id, const ImVec2& size_arg, bool border, ImGuiWindowFlags extra_flags)
+{
+	ImGui::BeginChild(str_id, size_arg, border, extra_flags);
+	{
+		if (selected_tab == 1)
+		{
+			ImGui::Text("Tab 1 content here");
+		}
+		if (selected_tab == 2)
+		{
+			ImGui::Text("Tab 2 content here");
+		}
+		if (selected_tab == 3)
+		{
+			ImGui::Text("Tab 3 content here");
+		}
+	}
+	ImGui::EndChild();
+
+	return true;
+}
+
+namespace ImGui {
+	// TODO: Move or improve/change this enum
+	typedef enum
+	{
+		HORIZONTAL = 0,
+		VERTICAL = 1,
+	} Alignment;
+
+	struct TabsDesc {
+		__int32	lableCount;
+		float lableWidth;
+		__int32 currentidx;
+
+	};
+
+	struct Tabs {
+		TabsDesc* tbd;
+		ImGuiID ID;
+		__int32 selectedIdx;
+	};
+
+	static   ImVector<Tabs*> CacheTabs;
+	static   Tabs* CurTabs;
+	inline void BeginTabs(const char* name, int lablesCount, float tabwidth = 0) {
+		//Find exists Tabs
+		Tabs* exsisttbs = NULL;
+		ImGuiID id = ImHash(name, 0);
+		for (int i = 0; i < CacheTabs.Size; i++) {
+			if (CacheTabs[i]->ID == id) {
+				exsisttbs = CacheTabs[i];
+			}
+		}
+
+		if (exsisttbs == NULL) {
+			Tabs* tbs = (Tabs*)ImGui::MemAlloc(sizeof(Tabs));
+			tbs->selectedIdx = 0;
+			tbs->ID = id;
+			CacheTabs.insert(CacheTabs.begin(), tbs);
+			CurTabs = tbs;
+		}
+		else
+		{
+			CurTabs = exsisttbs;
+		}
+
+		TabsDesc* tbd = (TabsDesc*)ImGui::MemAlloc(sizeof(TabsDesc));
+		tbd->lableCount = lablesCount;
+		tbd->currentidx = 0;
+		ImVec2 windowSize = ImGui::GetWindowSize();
+		tbd->lableWidth = tabwidth; // tabwidth determined outside of this scope !
+		CurTabs->tbd = tbd;
+	}
+
+	inline void EndTabs() {
+		MemFree(CurTabs->tbd);
+		CurTabs = NULL;
+
+	}
+
+	inline bool AddTab(const char* label, const char* tooltip, unsigned int table_alignment = ImGui::Alignment::HORIZONTAL)
+	{
+
+		TabsDesc* tbs = CurTabs->tbd;
+		ImGuiStyle& style = ImGui::GetStyle();
+		ImVec2 itemSpacing = style.ItemSpacing;
+		ImVec4 color = style.Colors[ImGuiCol_Button];
+		ImVec4 colorActive = style.Colors[ImGuiCol_ButtonActive];
+		ImVec4 colorHover = style.Colors[ImGuiCol_ButtonHovered];
+		style.ItemSpacing.x = 0;
+
+		if (tbs->currentidx > 0)
+		{
+			if(table_alignment == HORIZONTAL)
+			{
+				ImGui::SameLine();
+			}
+		}
+
+		// push the style
+		if (tbs->currentidx == CurTabs->selectedIdx)
+		{
+			style.Colors[ImGuiCol_Button] = colorActive;
+			style.Colors[ImGuiCol_ButtonActive] = colorActive;
+			style.Colors[ImGuiCol_ButtonHovered] = colorActive;
+		}
+		else
+		{
+			style.Colors[ImGuiCol_Button] = color;
+			style.Colors[ImGuiCol_ButtonActive] = colorActive;
+			style.Colors[ImGuiCol_ButtonHovered] = colorHover;
+		}
+
+		// Draw the button
+		if (ImGui::Button(label, ImVec2(tbs->lableWidth, 0))) {
+			CurTabs->selectedIdx = tbs->currentidx;
+		}
+
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Text("%s", tooltip);
+			ImGui::EndTooltip();
+		}
+
+		// Restore the style
+		style.Colors[ImGuiCol_Button] = color;
+		style.Colors[ImGuiCol_ButtonActive] = colorActive;
+		style.Colors[ImGuiCol_ButtonHovered] = colorHover;
+		style.ItemSpacing = itemSpacing;
+
+		// NOTE: Those lines were part of a mistake: incrementing the variable of the selected tab before selecting it..
+		// tbs->currentidx++;
+		// return CurTabs->selectedIdx == tbs->currentidx;
+		
+		return CurTabs->selectedIdx == tbs->currentidx++;
+	}
+}
+
 bool button_play_disabled = false;
 bool button_stop_disabled = true;
 
@@ -568,34 +708,66 @@ void ImGuiHUD::update() {
 		my_window_explorer_flags |= ImGuiWindowFlags_NoMove;
 		my_window_explorer_flags |= ImGuiWindowFlags_NoCollapse;
 		my_window_explorer_flags |= ImGuiWindowFlags_NoResize;
-		my_window_explorer_flags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
+		//my_window_explorer_flags |= ImGuiWindowFlags_AlwaysVerticalScrollbar;
 
 		ImGui::Begin("Window Explorer", nullptr, my_window_explorer_flags);
 		ImGui::SetWindowSize(ImVec2((m_glfw_environment->get_width() - m_window_scene.w - m_window_entity.w), m_glfw_environment->get_height() * 0.3f));
 		ImGui::SetWindowPos(ImVec2(m_window_scene.w, (m_glfw_environment->get_height() * 0.7f))); // 0.8f stands for "glfw_height - (glfw_height * 0.2))" <=> "glfw_height * (1 - 0.2f)" <=> "glfw_height * 0.8f";
 
-		//if (ImGui::TreeNode("Rendering more text into the same line"))
-		//{
-		//	// Using the Selectable() override that takes "bool* p_selected" parameter and toggle your booleans automatically.
-		//	static bool selected[3] = { false, false, false };
-		//	ImGui::Selectable("main.c", &selected[0]); ImGui::SameLine(300); ImGui::Text(" 2,345 bytes");
-		//	ImGui::Selectable("Hello.cpp", &selected[1]); ImGui::SameLine(300); ImGui::Text("12,345 bytes");
-		//	ImGui::Selectable("Hello.h", &selected[2]); ImGui::SameLine(300); ImGui::Text(" 2,345 bytes");
-		//	ImGui::TreePop();
-		//}
-
-		ImGui::BeginChildFrame(ImGui::GetID("Project Explorer"), ImVec2(m_window_explorer.w / 2, m_window_explorer.h), ImGuiWindowFlags_AlwaysVerticalScrollbar);
+		ImGui::BeginChildFrame(ImGui::GetID("Project Explorer"), ImVec2(ImGui::GetWindowWidth() / 2 - (ImGui::GetStyle().WindowPadding.x * 2), ImGui::GetWindowHeight() - (ImGui::GetStyle().WindowPadding.x * 4) - 5), ImGuiWindowFlags_AlwaysVerticalScrollbar);
 		{
+			#pragma region TABS (TEST): Horizontal || Vertical
+			//const ImGui::Alignment table_alignment = ImGui::Alignment::HORIZONTAL;
+			//unsigned int selected_tab = 1; // TODO: should not be defined here... it works only because there if a IF-statement to AddTab() function
+			//const unsigned int num_tabs = 3;
+			//const float tab_width = (ImGui::GetWindowSize().x - ImGui::GetStyle().ScrollbarSize - (ImGui::GetStyle().WindowPadding.x * 2)) / (num_tabs); // Width of 1 Tab
+
+			//ImGui::BeginGroup();
+			//{
+			//	ImGui::BeginTabs("Tabs1", num_tabs, tab_width); // default tabs width
+			//	{
+			//		if (ImGui::AddTab("Tab1", "Tab1", table_alignment)) { selected_tab = 1; }
+			//		if (ImGui::AddTab("Tab2", "Tab2", table_alignment)) { selected_tab = 2; }
+			//		if (ImGui::AddTab("Tab3", "Tab3", table_alignment)) { selected_tab = 3; }
+			//	}
+			//	ImGui::EndTabs();
+			//}
+			//ImGui::EndGroup();
+
+			//// NOTE: One the right side ONLY for vertical table alignment style
+			//if(table_alignment == ImGui::Alignment::VERTICAL)
+			//{
+			//	ImGui::SameLine();
+			//}
+			//ImGui::BeginGroup();
+			//{
+			//	//Pages...
+			//	// TODO: (Create a function) Should call Imgui::BeginChild with different size parameters, depending on the table_alignment (horizontal/vertical)
+			//	if(table_alignment == ImGui::Alignment::HORIZONTAL)
+			//	{
+			//		begin_child_tab_content(selected_tab, "Chiild Title Bar Menu HORIZONTAL", ImVec2(ImGui::GetWindowSize().x - ImGui::GetStyle().ScrollbarSize - (ImGui::GetStyle().WindowPadding.x * 2) , 200), true, ImGuiWindowFlags_Modal);
+			//	}
+			//	if (table_alignment == ImGui::Alignment::VERTICAL)
+			//		
+			//		begin_child_tab_content(selected_tab, "Chiild Title Bar Menu VERTICAL", ImVec2(ImGui::GetWindowSize().x - ImGui::GetStyle().ScrollbarSize - (ImGui::GetStyle().WindowPadding.x * 3) /* 4 <=> [2sides(left&right) * nbColumns (here we have the tabs, too))] */ - tab_width, 200), true, ImGuiWindowFlags_Modal);
+			//	
+			//}
+			//ImGui::EndGroup();
+#pragma endregion
+
 			ImGui::BeginGroup();
 			{
+				// Begin Tilebar title
+				//ImGui::PushStyleColor(ImGuiCol_ChildWindowBg, )
 				ImGui::Text("Project Explorer");
+				// End Tilebar title
 				recursive_dir(GetCurrentWorkingDir(), "DreamInEngine_2.0", true);
 			}
 			ImGui::EndGroup();
 		}
 		ImGui::EndChild();
 		ImGui::SameLine();
-		ImGui::BeginChildFrame(ImGui::GetID("Resource Explorer"), ImVec2(m_window_explorer.w / 2, m_window_explorer.h), ImGuiWindowFlags_AlwaysVerticalScrollbar);
+		ImGui::BeginChildFrame(ImGui::GetID("Resource Explorer"), ImVec2(ImGui::GetWindowWidth() / 2 - (ImGui::GetStyle().WindowPadding.x * 2), ImGui::GetWindowHeight() - (ImGui::GetStyle().WindowPadding.x * 4) - 5), ImGuiWindowFlags_AlwaysVerticalScrollbar);
 		{
 			ImGui::Text("Resource Explorer");
 			ImGui::BeginGroup();
@@ -610,7 +782,7 @@ void ImGuiHUD::update() {
 				bool button_pressed = false;
 				const int frame_padding = 0; // NO_FRAME_PADDING
 				int nb_textures = 0;
-				
+
 				for (auto& it : textures_bank)
 				{
 					const std::string texture_name = it.first; // name;
@@ -622,16 +794,16 @@ void ImGuiHUD::update() {
 
 					// On créé un groupe
 					ImGui::BeginGroup();
-					
-						button_pressed = ImGui::ImageButton((void*)(intptr_t)texture.ID, ImVec2(64.0f, 64.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), frame_padding);
-						// Text Centered
-						ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x) / 2));
-						ImGui::Text(it.first.c_str());
-					
+
+					button_pressed = ImGui::ImageButton((void*)(intptr_t)texture.ID, ImVec2(64.0f, 64.0f), ImVec2(0.0f, 0.0f), ImVec2(1.0f, 1.0f), frame_padding);
+					// Text Centered
+					ImGui::SetCursorPosX(ImGui::GetCursorPosX() + ((64.0f - text_size.x) / 2));
+					ImGui::Text(it.first.c_str());
+
 					ImGui::EndGroup();
 
 					// NOTE: 7 <=> Number of Max textures per line
-					if((nb_textures % 7) != 0) // Not multiple of 7
+					if ((nb_textures % 7) != 0) // Not multiple of 7
 					{
 						ImGui::SameLine();
 					}
