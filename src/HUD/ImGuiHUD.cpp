@@ -803,9 +803,13 @@ void ImGuiHUD::update() {
 					ImGui::EndGroup();
 
 					// NOTE: 7 <=> Number of Max textures per line
-					if ((nb_textures % 7) != 0) // Not multiple of 7
+					if ((nb_textures * 64.0f < ImGui::GetWindowWidth() - ImGui::GetStyle().ScrollbarSize - (ImGui::GetStyle().WindowPadding.x * 2) - (2*64.0f))) // Not multiple of 7
 					{
 						ImGui::SameLine();
+					}
+					else // Out of frame -> Return to next line;
+					{
+						nb_textures = 0;
 					}
 
 					// 2. Make textures selectable if an entity is selected AND has a COMPONENT_SPRITE component (which is ALWAYS the case in our engine)
