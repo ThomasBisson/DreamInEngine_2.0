@@ -38,6 +38,8 @@ public:
 			int ii = it->second;
 			if (ii == i) {
 				it2 = it;
+				//map.erase(it);
+				//return true;
 			}
 			else if (ii > i) {
 				it->second -= 1;
@@ -45,7 +47,7 @@ public:
 		}
 		map.erase(it2);
 
-		return true;
+		return false;
 	}
 
 	T*& get(unsigned int indice) {

@@ -509,7 +509,12 @@ void ImGuiHUD::update() {
 		ImGui::EndChild();
 
 		if (ImGui::Button("DELETE ENTITY")) {
-			m_scene_manager.remove_entity(entitySelected);
+			//If nothing if selected (= -1)
+			if (entitySelected >= 0) {
+				m_scene_manager.remove_entity(entitySelected);
+				//Put it back to nothing selected
+				entitySelected = -1;
+			}
 		}
 
 	this->UpdateCurrentWindowRectData(&m_window_scene);

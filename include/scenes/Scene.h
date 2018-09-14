@@ -40,11 +40,11 @@ public:
 
 	ComponentStore<Entity>& getEntities() { return m_entities; }
 
-	ComponentStore<Sprite> getSprites() { return m_sprites; }
+	ComponentStore<Sprite>& getSprites() { return m_sprites; }
 
-	ComponentStore<BoxPhysics> getBoxPhysics() const { return m_box_physique; }
+	ComponentStore<BoxPhysics>& getBoxPhysics() { return m_box_physique; }
 
-	ComponentStore<Input> getInputs() { return m_inputs; }
+	ComponentStore<Input>& getInputs() { return m_inputs; }
 
 	~Scene();
 private:

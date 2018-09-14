@@ -55,35 +55,22 @@ bool SceneManager::init() {
 	bool success = true;
 
 	/* Create entity */
-	//m_actualScene->getEntities().add(new Entity("container_entity", 0), 0);
-	//m_actualScene->getEntities().add(new Entity("face_entity", 1), 1);
-	//m_actualScene->getEntities().add(new Entity("pokeball_entity", 2), 2);
 	add_entity("container_entity");
 	add_entity("face_entity");
 	add_entity("pokeball_entity");
 
-
-	// Container (Entity ID: 0)
-	//this->add_component(COMPONENT_SPRITE, 0);
-
 	// Face (Entity ID: 1)
-	//this->add_component(COMPONENT_SPRITE, 1);
 	this->get_component<Sprite>(COMPONENT_SPRITE, 1)->Texture = ResourceManager::GetTexture("face");
 	this->get_component<Sprite>(COMPONENT_SPRITE, 1)->Position = glm::vec2(50.0, 300.0f);
 	this->add_component(COMPONENT_INPUT, 1);
 
 	// Pokeball (Entity ID: 2)
-	//this->add_component(COMPONENT_SPRITE, 2);
 	this->get_component<Sprite>(COMPONENT_SPRITE, 2)->Texture = ResourceManager::GetTexture("pokeball");
 	this->get_component<Sprite>(COMPONENT_SPRITE, 2)->Position = glm::vec2(50.0, 500.0f);
 
 	//this->get_components(0); // entity 0's component mask
 
 	// [CRITICAL] TODO: solve the case where a component (ex: Sprite) can't be updated (Position/Rotation/etc..) while having an attached Box2D collider
-	// TODO: [PB] the first time we click on "Play" Button, all the entities with a Box2D component have their params "reseted" to 0 (because of BoxPhysics default values)
-	this->addBox2D(this->m_actualScene->getEntities().get(0), this->getActualScene().getSprites().get(this->getActualScene().getEntities().get(0)->id), true);
-	//this->addBox2D(this->getScene("Aloha")->getEntities()[1], this->getScene("Aloha")->getSprites().get(this->getScene("Aloha")->getEntities()[1].id), true);
-	this->addBox2D(this->m_actualScene->getEntities().get(2), this->getActualScene().getSprites().get(this->getActualScene().getEntities().get(2)->id), false);
 
 	return success;
 }
@@ -371,34 +358,37 @@ void SceneManager::add_entity(std::string name, float x, float y)
 
 void SceneManager::remove_entity(unsigned int id)
 {
-	for (int i : this->get_components(id)){
-		remove_component(id, i);
-	}
+	remove_components(id);
 	m_actualScene->getEntities().remove(id);
+}
+
+bool SceneManager::remove_components(unsigned int id)
+{
+	for (int component : this->get_components(id)) {
+		remove_component(id, component);
+	}
+	return false;
 }
 
 bool SceneManager::remove_component(unsigned int id, unsigned int component)
 {
 	if (component == COMPONENT_SPRITE) {
-		this->m_actualScene->getSprites().remove(id);
-		this->m_actualScene->getEntities().get(id)->mask -= component;
+		m_actualScene->getSprites().remove(id);
 	}
 	else if (component == COMPONENT_INPUT) {
 		this->m_actualScene->getInputs().remove(id);
-		this->m_actualScene->getEntities().get(id)->mask -= component;
 	}
 	else if (component == COMPONENT_BOX2DPHYSICS) {
 		this->m_actualScene->getBoxPhysics().remove(id);
-		this->m_actualScene->getEntities().get(id)->mask -= component;
 	}
 	else {
-		std::cout << "bah non y rien !!!" << std::endl;
 		return false;
 	}
-	std::cout << "Bah si y un truc !!!" << std::endl;
-	//this->m_actualScene->getEntities().get(id)->mask = 0;
+	this->m_actualScene->getEntities().get(id)->mask -= component;
 	return true;
 }
+
+
 
 // NOTE: Even if it's a generic (return) type, we STILL need to provide the "ComponentType" parameter..
 // TODO: Find a way, if possible, to call the method without the need of the "ComponentType" parameter

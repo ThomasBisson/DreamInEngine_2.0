@@ -165,6 +165,8 @@ public:
 
 	bool remove_component(unsigned int id, unsigned int component);
 
+	bool remove_components(unsigned int id);
+
 	~SceneManager();
 };
 
