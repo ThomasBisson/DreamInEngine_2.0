@@ -44,11 +44,6 @@ int main() {
 	// Select a scene to be marked as active
 	sm->selectScene("Aloha");
 
-	/* Get the Scene Manager's first scene */
-	sm->getActualScene().getEntities().emplace_back(Entity("container_entity", 0));
-	sm->getActualScene().getEntities().emplace_back(Entity("face_entity", 1));
-	sm->getActualScene().getEntities().emplace_back(Entity("pokeball_entity", 2));
-
 	sm->start();
 
 	return 0;

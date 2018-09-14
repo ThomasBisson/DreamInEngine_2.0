@@ -368,6 +368,8 @@ void ImGuiHUD::update() {
 	static bool queryComponentInfo = false; // TODO: See if it is really useful in the future
 	static BooleanCustom query_add_component = BooleanCustom();
 
+	static bool show_add_entity = false;
+
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
@@ -441,18 +443,47 @@ void ImGuiHUD::update() {
 	ImGui::SetWindowSize(ImVec2(m_glfw_environment->get_width() * 0.2f, m_glfw_environment->get_height() - this->m_window_menubar.h));
 	ImGui::SetWindowPos(ImVec2(0, 0 + this->m_window_menubar.h));
 	ImGui::Spacing();
-	for (unsigned int i = 0; i < m_scene_manager.getScenes().size(); i++) {
-		if (ImGui::CollapsingHeader(m_scene_manager.getScenes()[i]->getName().c_str())) {
-			for (unsigned int j = 0; j < m_scene_manager.getScenes()[i]->getEntities().size(); j++) {
-				if (ImGui::Selectable(m_scene_manager.getScenes()[i]->getEntities()[j].name.c_str(), entitySelected == j)) {
-					entitySelected = j;
-					sceneSelected = i;
+	//for (unsigned int i = 0; i < m_scene_manager.getScenes().size(); i++) {
+		if (ImGui::CollapsingHeader(m_scene_manager.getActualScene().getName().c_str())) {
+			for (unsigned int j = 0; j < m_scene_manager.getActualScene().getEntities().getVector().size(); j++) {
+				if (ImGui::Selectable(m_scene_manager.getActualScene().getEntities().getVector()[j]->name.c_str(), entitySelected == m_scene_manager.getActualScene().getEntities().getVector()[j]->id)) {
+					entitySelected = m_scene_manager.getActualScene().getEntities().getVector()[j]->id;
+					sceneSelected = 1;
 					// Reset the text triggered by the ADD COMPONENT (when we click on an entity in the "window scene")
 					query_add_component = BooleanCustom();
 				}
 			}
 		}
-	}
+		ImGui::Spacing();
+
+		ImGui::BeginChild("ADD ENTITY", ImVec2(0.0f, ImGui::GetWindowHeight() / 2), true);
+
+		if (ImGui::Button("ADD ENTITY")) {
+			if(show_add_entity)
+				show_add_entity = false;
+			else
+				show_add_entity = true;
+		}
+
+		if (show_add_entity) {
+			char strNameEntity[64] = "unnamed";
+			ImGui::InputText("Name", strNameEntity, IM_ARRAYSIZE(strNameEntity));
+			//ImGui::InputFloat("")
+			static float fPosX = 0.000f;
+			ImGui::InputFloat("pos X", &fPosX, 0.01f, 1.0f);
+			static float fPosY = 0.000f;
+			ImGui::InputFloat("pos Y", &fPosY, 0.01f, 1.0f);
+			if (ImGui::Button("ADD")) {
+				m_scene_manager.add_entity(strNameEntity, fPosX, fPosY);
+				show_add_entity = false;
+			}
+		}
+
+		ImGui::EndChild();
+
+		if (ImGui::Button("DELETE ENTITY")) {
+			m_scene_manager.remove_entity(entitySelected);
+		}
 
 	this->UpdateCurrentWindowRectData(&m_window_scene);
 
@@ -473,14 +504,14 @@ void ImGuiHUD::update() {
 		ImGui::BeginGroup();
 		if (entitySelected != -1 && sceneSelected != -1)
 		{
-			Entity entity = m_scene_manager.getActualScene().getEntities()[entitySelected];
+			Entity *entity = m_scene_manager.getActualScene().getEntities().get(entitySelected);
 
-			ImGui::Text("%s (id: %d, mask: %d)", entity.name.c_str(), entity.id, entity.mask);
+			ImGui::Text("%s (id: %d, mask: %d)", entity->name.c_str(), entity->id, entity->mask);
 			ImGui::Spacing();
 
 			// TODO: For the selected entity: Display all its components
 			// TODO: The displayed compoennts should be represented as Big Clickable Buttons 
-			for (unsigned int component_type : m_scene_manager.get_components(entity.id))
+			for (unsigned int component_type : m_scene_manager.get_components(entity->id))
 			{
 				if (ImGui::Button((component_names_map[component_type]).c_str())) // button pressed ?
 				{
@@ -511,7 +542,7 @@ void ImGuiHUD::update() {
 					const std::string component_selected_name = listbox_items[listbox_item_current];
 					const unsigned int component_type = component_types_map[component_selected_name];
 
-					query_add_component = m_scene_manager.add_component(component_type, m_scene_manager.getActualScene().getEntities()[entitySelected].id);
+					query_add_component = m_scene_manager.add_component(component_type, /*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/);
 					if (!std::empty(query_add_component.Message))
 					{
 						queryComponentInfo = true;
@@ -543,13 +574,13 @@ void ImGuiHUD::update() {
 					// First line
 					ImGui::Text("X");
 					ImGui::SameLine();
-					if (ImGui::InputFloat(" position.x", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Position.x), 0.10f, 0, "%.3f")) // Text changed !
+					if (ImGui::InputFloat(" position.x", &(/*m_scene_manager.getActualScene().getEntities()[entitySelected],*/ m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Position.x), 0.10f, 0, "%.3f")) // Text changed !
 					{
 					}
 					// Second line
 					ImGui::Text("Y");
 					ImGui::SameLine();
-					if (ImGui::InputFloat(" position.y", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Position.y), 0.10f, 0, "%.3f")) // Text changed !
+					if (ImGui::InputFloat(" position.y", &(/*m_scene_manager.getActualScene().getEntities()[entitySelected],*/ m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Position.y), 0.10f, 0, "%.3f")) // Text changed !
 					{
 					}
 					ImGui::EndGroup();
@@ -565,13 +596,13 @@ void ImGuiHUD::update() {
 					// First line
 					ImGui::Text("W");
 					ImGui::SameLine();
-					if (ImGui::InputFloat(" size.x", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Size.x), 0.10f, 0, "%.3f")) // Text changed !
+					if (ImGui::InputFloat(" size.x", &(/*m_scene_manager.getActualScene().getEntities()[entitySelected],*/ m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Size.x), 0.10f, 0, "%.3f")) // Text changed !
 					{
 					}
 					// Second line
 					ImGui::Text("H");
 					ImGui::SameLine();
-					if (ImGui::InputFloat(" size.y", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Size.y), 0.10f, 0, "%.3f")) // Text changed !
+					if (ImGui::InputFloat(" size.y", &(/*m_scene_manager.getActualScene().getEntities()[entitySelected],*/ m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Size.y), 0.10f, 0, "%.3f")) // Text changed !
 					{
 					}
 					ImGui::EndGroup();
@@ -585,7 +616,7 @@ void ImGuiHUD::update() {
 					ImGui::BeginGroup();
 					ImGui::Text("Angle");
 					ImGui::SameLine();
-					if (ImGui::InputFloat("°", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Rotation), 0.10f, 0, "%.3f")) // Text changed !
+					if (ImGui::InputFloat("°", &(/*m_scene_manager.getActualScene().getEntities()[entitySelected],*/ m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Rotation), 0.10f, 0, "%.3f")) // Text changed !
 					{
 					}
 					ImGui::EndGroup();
@@ -600,19 +631,19 @@ void ImGuiHUD::update() {
 					// First line
 					ImGui::Text("R");
 					ImGui::SameLine();
-					if (ImGui::InputFloat(" color.r", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Color.x), 0.10f, 0, "%.1f")) // Text changed !
+					if (ImGui::InputFloat(" color.r", &(/*m_scene_manager.getActualScene().getEntities()[entitySelected],*/ m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Color.x), 0.10f, 0, "%.1f")) // Text changed !
 					{
 					}
 					// Second line
 					ImGui::Text("V");
 					ImGui::SameLine();
-					if (ImGui::InputFloat(" color.v", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Color.y), 0.10f, 0, "%.1f")) // Text changed !
+					if (ImGui::InputFloat(" color.v", &(/*m_scene_manager.getActualScene().getEntities()[entitySelected],*/ m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Color.y), 0.10f, 0, "%.1f")) // Text changed !
 					{
 					}
 					// Third line
 					ImGui::Text("B");
 					ImGui::SameLine();
-					if (ImGui::InputFloat(" color.b", &(m_scene_manager.getActualScene().getEntities()[entitySelected], m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Color.z), 1.0f, 0, "%.1f")) // Text changed !
+					if (ImGui::InputFloat(" color.b", &(/*m_scene_manager.getActualScene().getEntities()[entitySelected],*/ m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Color.z), 1.0f, 0, "%.1f")) // Text changed !
 					{
 					}
 					ImGui::EndGroup();
@@ -628,7 +659,7 @@ void ImGuiHUD::update() {
 					// First line
 					ImGui::Text("Left");
 					ImGui::SameLine();
-					InputEnum *keyLeft = &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_left);
+					InputEnum *keyLeft = &(m_scene_manager.getActualScene().getInputs().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->m_left);
 					int *keyLeftInt = (int*)keyLeft;
 					if (ImGui::InputInt(" left", keyLeftInt)); // Text changed !
 					{
@@ -636,7 +667,7 @@ void ImGuiHUD::update() {
 					// Second line
 					ImGui::Text("Right");
 					ImGui::SameLine();
-					InputEnum *keyRight = &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_right);
+					InputEnum *keyRight = &(m_scene_manager.getActualScene().getInputs().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->m_right);
 					int *keyRightInt = (int*)keyRight;
 					if (ImGui::InputInt(" right", keyRightInt)); // Text changed !
 					{
@@ -644,7 +675,7 @@ void ImGuiHUD::update() {
 					// Third line
 					ImGui::Text("Down");
 					ImGui::SameLine();
-					InputEnum *keyDown = &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_down);
+					InputEnum *keyDown = &(m_scene_manager.getActualScene().getInputs().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->m_down);
 					int *keyDownInt = (int*)keyDown;
 					if (ImGui::InputInt(" down", keyDownInt)); // Text changed !
 					{
@@ -652,7 +683,7 @@ void ImGuiHUD::update() {
 					// Fourth line
 					ImGui::Text("Up");
 					ImGui::SameLine();
-					InputEnum *keyUp = &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_up);
+					InputEnum *keyUp = &(m_scene_manager.getActualScene().getInputs().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->m_up);
 					int *keyUpInt = (int*)keyUp;
 					if (ImGui::InputInt(" up", keyUpInt)); // Text changed !
 					{
@@ -669,25 +700,25 @@ void ImGuiHUD::update() {
 					// First line
 					ImGui::Text("Left");
 					ImGui::SameLine();
-					if (ImGui::InputInt(" left", &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_speed_left))); // Text changed !
+					if (ImGui::InputInt(" left", &(m_scene_manager.getActualScene().getInputs().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->m_speed_left))); // Text changed !
 					{
 					}
 					// Second line
 					ImGui::Text("Right");
 					ImGui::SameLine();
-					if (ImGui::InputInt(" right", &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_speed_right))); // Text changed !
+					if (ImGui::InputInt(" right", &(m_scene_manager.getActualScene().getInputs().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->m_speed_right))); // Text changed !
 					{
 					}
 					// Third line
 					ImGui::Text("Down");
 					ImGui::SameLine();
-					if (ImGui::InputInt(" down", &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_speed_down))); // Text changed !
+					if (ImGui::InputInt(" down", &(m_scene_manager.getActualScene().getInputs().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->m_speed_down))); // Text changed !
 					{
 					}
 					// Fourth line
 					ImGui::Text("Up");
 					ImGui::SameLine();
-					if (ImGui::InputInt(" up", &(m_scene_manager.getActualScene().getInputs().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->m_speed_up))); // Text changed !
+					if (ImGui::InputInt(" up", &(m_scene_manager.getActualScene().getInputs().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->m_speed_up))); // Text changed !
 					{
 					}
 					ImGui::EndGroup();
@@ -809,12 +840,12 @@ void ImGuiHUD::update() {
 					}
 
 					// 2. Make textures selectable if an entity is selected AND has a COMPONENT_SPRITE component (which is ALWAYS the case in our engine)
-					if (entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities()[entitySelected].mask, COMPONENT_SPRITE))
+					if (entitySelected != -1 /* && sceneActive */ && has_component(m_scene_manager.getActualScene().getEntities().get(entitySelected)->mask, COMPONENT_SPRITE))
 					{
 						if (button_pressed)
 						{
 							// Selected entity takes the selected Texture
-							m_scene_manager.getActualScene().getSprites().get(m_scene_manager.getActualScene().getEntities()[entitySelected].id)->Texture = ResourceManager::GetTexture(texture_name);
+							m_scene_manager.getActualScene().getSprites().get(/*m_scene_manager.getActualScene().getEntities()[*/entitySelected/*].id*/)->Texture = ResourceManager::GetTexture(texture_name);
 						}
 					}
 					else

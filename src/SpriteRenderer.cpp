@@ -39,6 +39,8 @@ void SpriteRenderer::DrawSprite(Texture &texture, glm::vec2 position,
 	glBindVertexArray(this->quadVAO);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 	glBindVertexArray(0);
+
+	glBindTexture(GL_TEXTURE_2D,0);
 }
 
 void SpriteRenderer::ChangeVerticeData(GLfloat *vertices)

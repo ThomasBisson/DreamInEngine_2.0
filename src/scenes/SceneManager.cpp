@@ -17,6 +17,8 @@
 
 #define IDENTITY_MATRICE 1.0f
 
+static int ID = 0;
+
 SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
 	m_glfw_environment = glfw_environment;
 	m_ImGui_HUD = new ImGuiHUD(*this, glfw_environment, true);
@@ -52,17 +54,26 @@ SceneManager::SceneManager(GLFWEnvironment *glfw_environment) {
 bool SceneManager::init() {
 	bool success = true;
 
+	/* Create entity */
+	//m_actualScene->getEntities().add(new Entity("container_entity", 0), 0);
+	//m_actualScene->getEntities().add(new Entity("face_entity", 1), 1);
+	//m_actualScene->getEntities().add(new Entity("pokeball_entity", 2), 2);
+	add_entity("container_entity");
+	add_entity("face_entity");
+	add_entity("pokeball_entity");
+
+
 	// Container (Entity ID: 0)
-	this->add_component(COMPONENT_SPRITE, 0);
+	//this->add_component(COMPONENT_SPRITE, 0);
 
 	// Face (Entity ID: 1)
-	this->add_component(COMPONENT_SPRITE, 1);
+	//this->add_component(COMPONENT_SPRITE, 1);
 	this->get_component<Sprite>(COMPONENT_SPRITE, 1)->Texture = ResourceManager::GetTexture("face");
 	this->get_component<Sprite>(COMPONENT_SPRITE, 1)->Position = glm::vec2(50.0, 300.0f);
 	this->add_component(COMPONENT_INPUT, 1);
 
 	// Pokeball (Entity ID: 2)
-	this->add_component(COMPONENT_SPRITE, 2);
+	//this->add_component(COMPONENT_SPRITE, 2);
 	this->get_component<Sprite>(COMPONENT_SPRITE, 2)->Texture = ResourceManager::GetTexture("pokeball");
 	this->get_component<Sprite>(COMPONENT_SPRITE, 2)->Position = glm::vec2(50.0, 500.0f);
 
@@ -70,9 +81,9 @@ bool SceneManager::init() {
 
 	// [CRITICAL] TODO: solve the case where a component (ex: Sprite) can't be updated (Position/Rotation/etc..) while having an attached Box2D collider
 	// TODO: [PB] the first time we click on "Play" Button, all the entities with a Box2D component have their params "reseted" to 0 (because of BoxPhysics default values)
-	this->addBox2D(this->getActualScene().getEntities()[0], this->getActualScene().getSprites().get(this->getActualScene().getEntities()[0].id), true);
+	this->addBox2D(this->m_actualScene->getEntities().get(0), this->getActualScene().getSprites().get(this->getActualScene().getEntities().get(0)->id), true);
 	//this->addBox2D(this->getScene("Aloha")->getEntities()[1], this->getScene("Aloha")->getSprites().get(this->getScene("Aloha")->getEntities()[1].id), true);
-	this->addBox2D(this->getActualScene().getEntities()[2], this->getActualScene().getSprites().get(this->getActualScene().getEntities()[2].id), false);
+	this->addBox2D(this->m_actualScene->getEntities().get(2), this->getActualScene().getSprites().get(this->getActualScene().getEntities().get(2)->id), false);
 
 	return success;
 }
@@ -226,13 +237,13 @@ void SceneManager::render_sprite(Sprite *sprite) {
 }
 
 // TODO: move to another location
-void SceneManager::addBox2D(/*std::string sceneName, */Entity entity, Sprite *sprite, bool dynamicBody) {
-	/*m_scenes[m_index_scene[sceneName]]*/m_actualScene->add_box_physics(entity, sprite->Position.x, sprite->Position.y,
+void SceneManager::addBox2D(Entity *entity, Sprite *sprite, bool dynamicBody) {
+	m_actualScene->add_box_physics(entity, sprite->Position.x, sprite->Position.y,
 		sprite->Size.x, sprite->Size.y, dynamicBody);
 }
 
-void SceneManager::addInput(/*std::string sceneName, */Entity entity) {
-	/*m_scenes[m_index_scene[sceneName]]*/m_actualScene->add_input(entity);
+void SceneManager::addInput(Entity *entity) {
+	m_actualScene->add_input(entity);
 }
 
 //@TODO: see if there is no memory leaks => Do Tests
@@ -267,13 +278,13 @@ bool has_component(unsigned int entity_mask, unsigned int component_mask)
 BooleanCustom SceneManager::add_component(unsigned int component_type, unsigned int entity_id)
 {
 	// check if entity_id is valid (in entity list range)
-	if (entity_id >= this->getActualScene().getEntities().size())
+	/*if (entity_id >= this->getActualScene().getEntities().size())
 	{
 		return BooleanCustom(false, "[out of range] Entity ID does not exists");
-	}
+	}*/
 
 	// Add component type to entity's mask
-	auto &entity_mask = this->getActualScene().getEntities()[entity_id].mask;
+	auto &entity_mask = this->getActualScene().getEntities().get(entity_id)->mask;
 
 	if (component_type == COMPONENT_SPRITE)
 	{
@@ -285,7 +296,7 @@ BooleanCustom SceneManager::add_component(unsigned int component_type, unsigned 
 		else
 		{
 			this->new_sprite(entity_id);
-			this->getActualScene().getEntities()[entity_id].mask |= component_type; // TODO: Simplify call or make a reference call
+			this->getActualScene().getEntities().get(entity_id)->mask |= component_type; // TODO: Simplify call or make a reference call
 			return BooleanCustom(true, "Successfully added Sprite component");
 		}
 	}
@@ -304,8 +315,8 @@ BooleanCustom SceneManager::add_component(unsigned int component_type, unsigned 
 		else
 		{
 			// TODO: Thomas, you can solve the BoxPhysics no-param constructor here ;D
-			//this->getActualScene().getBoxPhysics().add(new BoxPhysics(), entity_id);
-			this->getActualScene().getEntities()[entity_id].mask |= component_type;
+			this->addBox2D(this->getActualScene().getEntities().get(entity_id), this->m_actualScene->getSprites().get(entity_id), true);
+			this->getActualScene().getEntities().get(entity_id)->mask |= component_type;
 			return BooleanCustom(true, "Successfully added BoxPhysics component");
 		}
 	}
@@ -321,8 +332,8 @@ BooleanCustom SceneManager::add_component(unsigned int component_type, unsigned 
 		}
 		else
 		{
-			this->addInput(this->getActualScene().getEntities()[entity_id]);
-			this->getActualScene().getEntities()[entity_id].mask |= component_type;
+			this->addInput(this->getActualScene().getEntities().get(entity_id));
+			this->getActualScene().getEntities().get(entity_id)->mask |= component_type;
 			return BooleanCustom(true, "Successfully added Input component");
 		}
 	}
@@ -335,7 +346,7 @@ std::vector<unsigned int> SceneManager::get_components(unsigned int entity_id)
 {
 	std::vector<unsigned int> entity_component_masks;
 
-	unsigned int entityMask = this->getActualScene().getEntities()[entity_id].mask;
+	unsigned int entityMask = this->getActualScene().getEntities().get(entity_id)->mask;
 	unsigned int component_type = 1;
 
 	for (int i = 0; component_type << i < COMPONENT_TOTAL; ++i)
@@ -350,6 +361,45 @@ std::vector<unsigned int> SceneManager::get_components(unsigned int entity_id)
 	return entity_component_masks;
 }
 
+void SceneManager::add_entity(std::string name, float x, float y)
+{
+	m_actualScene->getEntities().add(new Entity(name, ID), ID);
+	add_component(COMPONENT_SPRITE, ID);
+	get_component<Sprite>(COMPONENT_SPRITE, ID)->Position = glm::vec2(x, y);
+	ID++;
+}
+
+void SceneManager::remove_entity(unsigned int id)
+{
+	for (int i : this->get_components(id)){
+		remove_component(id, i);
+	}
+	m_actualScene->getEntities().remove(id);
+}
+
+bool SceneManager::remove_component(unsigned int id, unsigned int component)
+{
+	if (component == COMPONENT_SPRITE) {
+		this->m_actualScene->getSprites().remove(id);
+		this->m_actualScene->getEntities().get(id)->mask -= component;
+	}
+	else if (component == COMPONENT_INPUT) {
+		this->m_actualScene->getInputs().remove(id);
+		this->m_actualScene->getEntities().get(id)->mask -= component;
+	}
+	else if (component == COMPONENT_BOX2DPHYSICS) {
+		this->m_actualScene->getBoxPhysics().remove(id);
+		this->m_actualScene->getEntities().get(id)->mask -= component;
+	}
+	else {
+		std::cout << "bah non y rien !!!" << std::endl;
+		return false;
+	}
+	std::cout << "Bah si y un truc !!!" << std::endl;
+	//this->m_actualScene->getEntities().get(id)->mask = 0;
+	return true;
+}
+
 // NOTE: Even if it's a generic (return) type, we STILL need to provide the "ComponentType" parameter..
 // TODO: Find a way, if possible, to call the method without the need of the "ComponentType" parameter
 // TODO: Correct bugs when/if there is no component to find !
@@ -358,7 +408,7 @@ std::vector<unsigned int> SceneManager::get_components(unsigned int entity_id)
 template <typename T>
 T* SceneManager::get_component(ComponentType component_type, unsigned entity_id)
 {
-	const unsigned int entity_mask = this->getActualScene().getEntities()[entity_id].mask;
+	const unsigned int entity_mask = this->getActualScene().getEntities().get(entity_id)->mask;
 
 	if (component_type == COMPONENT_SPRITE)
 	{

@@ -144,9 +144,9 @@ public:
 	void render_sprite(Sprite *sprite);
 
 	// @NOTE: For Real-Time Game modification
-	void addBox2D(Entity entity, Sprite *sprite, bool dynamicBody);
+	void addBox2D(Entity *entity, Sprite *sprite, bool dynamicBody);
 
-	void addInput(Entity entity);
+	void addInput(Entity *entity);
 
 	void setRunningConfigEnum(RunningConfigEnum rce) { m_runningConfigEnum = rce; }
 	RunningConfigEnum getRunningConfigEnum() const { return m_runningConfigEnum; }
@@ -158,6 +158,12 @@ public:
 
 	// TODO: get components for 1 entity
 	std::vector<unsigned int> get_components(unsigned int entity_id);
+
+	void add_entity(std::string name, float x = 50.0f, float y = 50.0f);
+
+	void remove_entity(unsigned int id);
+
+	bool remove_component(unsigned int id, unsigned int component);
 
 	~SceneManager();
 };

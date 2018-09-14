@@ -15,7 +15,7 @@ m_sprites(), m_box_physique(), m_inputs(), m_entities() {
 void Scene::update(std::vector<InputEnum> inputs) {
 	m_box_physics_system.update(m_box_physique, m_sprites);
 	m_input_system.update(inputs, m_inputs, m_sprites);
-	m_world->Step(1.0 / 30.0, 8, 3);
+	m_world->Step(1.0 / 50.0, 8, 3);
 }
 
 void Scene::render() {
@@ -39,13 +39,13 @@ void Scene::add_sprite(unsigned int entity_id, Sprite *sprite) {
 	m_sprites.add(sprite, entity_id);
 }
 
-void Scene::add_box_physics(Entity entity, int x, int y, int w, int h, bool dyn) {
-	m_box_physique.add(new BoxPhysics(), entity.id);
-	m_box_physique.get(entity.id)->addRec(m_world, x, y, w, h, dyn);
-	m_world->SetContactListener(m_box_physique.get(entity.id));
+void Scene::add_box_physics(Entity *entity, int x, int y, int w, int h, bool dyn) {
+	m_box_physique.add(new BoxPhysics(), entity->id);
+	m_box_physique.get(entity->id)->addRec(m_world, x, y, w, h, dyn);
+	m_world->SetContactListener(m_box_physique.get(entity->id));
 }
 
-void Scene::add_input(Entity entity) {
-	m_inputs.add(new Input(), entity.id);
+void Scene::add_input(Entity *entity) {
+	m_inputs.add(new Input(), entity->id);
 }
 

@@ -26,12 +26,13 @@ public:
 	}
 
 	bool remove(unsigned int indice) {
-		//Remove the scene from the vector
+		//Remove the component from the vector
 		int i = map[indice];
-		vector.at(i) = vector[vector.size() - 1];
+		//vector.at(i) = vector[vector.size() - 1];
+		vector[i] = vector[vector.size() - 1];
 		vector.pop_back();
 
-		//Remove the scene from the map
+		//Remove the component from the map
 		std::unordered_map<unsigned int, unsigned int>::iterator it2;
 		for (std::unordered_map<unsigned int, unsigned int>::iterator it = map.begin(); it != map.end(); ++it) {
 			int ii = it->second;
@@ -43,6 +44,8 @@ public:
 			}
 		}
 		map.erase(it2);
+
+		return true;
 	}
 
 	T*& get(unsigned int indice) {

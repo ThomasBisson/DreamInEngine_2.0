@@ -28,9 +28,9 @@ public:
 
 	void add_sprite(unsigned int entity_id, Sprite* sprite);
 
-	void add_box_physics(Entity entity, int x, int y, int w, int h, bool dyn);
+	void add_box_physics(Entity *entity, int x, int y, int w, int h, bool dyn);
 
-	void add_input(Entity entity);
+	void add_input(Entity *entity);
 
 	void setName(std::string name) { m_name = name; }
 
@@ -38,13 +38,13 @@ public:
 
 	b2World* getWorld() const { return m_world; }
 
-	std::vector<Entity>& getEntities() { return m_entities; }
+	ComponentStore<Entity>& getEntities() { return m_entities; }
 
-	ComponentStore<Sprite> getSprites() const { return m_sprites; }
+	ComponentStore<Sprite> getSprites() { return m_sprites; }
 
 	ComponentStore<BoxPhysics> getBoxPhysics() const { return m_box_physique; }
 
-	ComponentStore<Input> getInputs() const { return m_inputs; }
+	ComponentStore<Input> getInputs() { return m_inputs; }
 
 	~Scene();
 private:
@@ -58,7 +58,7 @@ private:
 	InputSystem m_input_system;
 
 	// Scene entities
-	std::vector<Entity> m_entities;
+	ComponentStore<Entity> m_entities;
 
 	// Scene components
 	ComponentStore<BoxPhysics> m_box_physique;
